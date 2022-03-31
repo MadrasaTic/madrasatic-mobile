@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "madrasatic-mobile",
+    "slug": "madrasatic-mobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "madrasatic-mobile"
+}
