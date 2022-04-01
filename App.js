@@ -3,7 +3,9 @@ import { Text, View } from 'react-native';
 import { useFonts, WorkSans_700Bold, WorkSans_500Medium } from '@expo-google-fonts/work-sans';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Login from './screens/login'
+import Login from './screens/login';
+import Profile from './screens/profile';
+import LoggedInNavigator from './components/logggedInNavigator';
 
 
 
@@ -26,6 +28,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="LoggedInNavigator" component={LoggedInNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
       );

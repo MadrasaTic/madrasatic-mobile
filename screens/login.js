@@ -5,8 +5,8 @@ import { ImageBackground, StyleSheet, View,  Image } from "react-native";
 import COLORS from '../constants/colors';
 import Body from '../components/typography/body';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
-const image = "../assets/images/loginsignup.png";
-const googleIcon = "../assets/images/Google.png";
+const image = "../assets/images/loginSignup.png";
+const googleIcon = '../assets/images/google.png';
 
 const Login = ({ navigation }) => {
     return (
@@ -17,8 +17,9 @@ const Login = ({ navigation }) => {
             MadrasaTic est une plateforme qui permet de signaler facilement 
             un problème sans se soucier de l'autorité responsable de sa résolution.
           </Body>
-
-          <Pressable style={styles.Pressable}>
+          
+          {/* The onPress should be change to the login manager*/}
+          <Pressable style={styles.Pressable} onPress={() => {navigation.navigate("LoggedInNavigator")}}>
             <Image source={require(googleIcon)} style={styles.google} />
             <Bold style={styles.googleBtn}>Continuer avec Google</Bold>
           </Pressable>
