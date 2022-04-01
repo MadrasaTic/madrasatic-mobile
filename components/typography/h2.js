@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     h2: {
         fontFamily: 'WorkSans_700Bold',
         fontSize: 40,
-        letterSpacing: -2
+        letterSpacing: -1
     }
 })
 

@@ -1,21 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
 import H3 from '../components/typography/h3';
-import { ImageBackground, StyleSheet, View, Button } from "react-native";
+import Bold from '../components/typography/bold';
+import { ImageBackground, StyleSheet, View,  Image } from "react-native";
 import COLORS from '../constants/colors';
 import Body from '../components/typography/body';
-
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 const image = "../assets/images/loginsignup.png";
+const googleIcon = "../assets/images/Google.png";
 
 const Login = ({ navigation }) => {
     return (
       <ImageBackground source={require(image)} style={styles.image} resizeMode="cover">
         <View style={styles.content}>
-          <H3 style={styles.title}>Bievenue à MadrasaTic !</H3>
+          <H3 style={styles.title}>Bienvenue à MadrasaTic !</H3>
           <Body style={styles.description}>
             MadrasaTic est une plateforme qui permet de signaler facilement 
             un problème sans se soucier de l'autorité responsable de sa résolution.
           </Body>
-          <Button color="#DE5246" title="Se connecter" />
+
+          <Pressable style={styles.Pressable}>
+            <Image source={require(googleIcon)} style={styles.google} />
+            <Bold style={styles.googleBtn}>Continuer avec Google</Bold>
+          </Pressable>
+
           <Body style={styles.copyright}>
             © 2022 Quality Softwares, Inc
           </Body>
@@ -40,6 +47,28 @@ const styles = StyleSheet.create({
     color: COLORS.SUBTLE,
     marginBottom: 60
   },
+
+  Pressable : {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: "#DE5246",
+    borderRadius: 8,
+    paddingVertical: 16.5,
+    paddingHorizontal: 34.5
+  },
+
+  googleBtn : {
+    color: "white",
+  },
+
+  google : {
+    width: 19,
+    height: 19,
+    marginRight: 16
+  },
+
   copyright: {
     color: COLORS.SUBTLE,
     marginTop: 100

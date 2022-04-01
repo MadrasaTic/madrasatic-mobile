@@ -11,7 +11,8 @@ const Bold = (props) => {
 const styles = StyleSheet.create({
     bold: {
         fontFamily: 'WorkSans_700Bold',
-        fontSize: 16
+        fontSize: 16,
+        alignItems: "center"
     }
 })
 

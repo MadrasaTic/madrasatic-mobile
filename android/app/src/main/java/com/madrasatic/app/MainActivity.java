@@ -1,4 +1,4 @@
-package com.madrasaticmobile;
+package com.madrasatic.app;
 
 import android.os.Build;
 import android.os.Bundle;
