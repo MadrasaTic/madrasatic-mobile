@@ -6,5 +6,6 @@ export default COLORS = {
     TEXT: '#4A4A68',
     SUBTLE: '#8C8CA1',
     ACCENT: '#ECF1F4',
-    CLOUD: 'FAFCFE'
+    CLOUD: '#FAFCFE',
+    IRIS_10: '#EFEFFD'
  };

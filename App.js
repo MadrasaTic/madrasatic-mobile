@@ -3,17 +3,24 @@ import { Text, View } from 'react-native';
 import { useFonts, WorkSans_700Bold, WorkSans_500Medium } from '@expo-google-fonts/work-sans';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Login from './screens/login'
-
-
+import Login from './screens/login';
+import IntroSlider from './screens/IntroSlider';
+import { useState } from 'react';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  const hundleIntroDone = () => {
+    setShowIntro(false);
+  };
+
   let [fontsLoaded] = useFonts({
     WorkSans_700Bold,
     WorkSans_500Medium
   });
+
 
   if (!fontsLoaded) {
     return (
@@ -23,11 +30,17 @@ export default function App() {
     );
   } else {
       return (
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="Login" component={Login} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <>
+            {showIntro && <IntroSlider hundleDone={hundleIntroDone} />}
+            {
+            !showIntro && <NavigationContainer>
+              <Stack.Navigator screenOptions={{headerShown: false}}>
+                <Stack.Screen name="Login" component={Login} />
+              </Stack.Navigator>
+            </NavigationContainer>}
+            
+        </>
+        
       );
   }
 }

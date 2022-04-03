@@ -5,7 +5,7 @@ import { ImageBackground, StyleSheet, View,  Image } from "react-native";
 import COLORS from '../constants/colors';
 import Body from '../components/typography/body';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
-const image = "../assets/images/loginsignup.png";
+const image = "../assets/images/background.png";
 const googleIcon = "../assets/images/Google.png";
 
 const Login = ({ navigation }) => {
