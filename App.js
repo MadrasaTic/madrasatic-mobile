@@ -6,6 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import Login from './screens/login';
 import IntroSlider from './screens/IntroSlider';
 import { useState } from 'react';
+import Profile from './screens/profile';
+import LoggedInNavigator from './components/logggedInNavigator';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -36,11 +39,11 @@ export default function App() {
             !showIntro && <NavigationContainer>
               <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="LoggedInNavigator" component={LoggedInNavigator} />
               </Stack.Navigator>
             </NavigationContainer>}
             
         </>
-        
       );
   }
 }
