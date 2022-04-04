@@ -14,6 +14,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +23,7 @@ const Tab = createBottomTabNavigator();
 
 const LoggedInNavigator = ({ navigation }) => {
     // Animated tab indicator dot
-    const offset = useSharedValue(0);
+    const offset = useSharedValue(getPos());
 
     const customSpringStyles = useAnimatedStyle(() => {
         return {
@@ -47,9 +48,13 @@ const LoggedInNavigator = ({ navigation }) => {
             tabBarStyle: {
                 backgroundColor: COLORS.ACCENT,
                 position: 'absolute',
-                borderRadius: 30
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                justifyContent: 'center',
+                height: 70
             }
         }}>
+            {/*Home*/}
             <Tab.Screen name="Home" component={Home} options={{
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
@@ -61,9 +66,10 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
                 }} listeners={({navigation, route}) => ({
                     // on press
-                    tabPress:() => (offset.value = 1)
+                    tabPress:() => (offset.value = getPos())
                 })}/>
 
+            {/*Search*/}
             <Tab.Screen name="Search" component={Search} options={{
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
@@ -75,9 +81,10 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress:() => (offset.value = getWidth() * 2)
+                tabPress:() => (offset.value = getPos() * 3)
             })}/>
 
+            {/*Annonces*/}
             <Tab.Screen name="Announcement" component={Announcement} options={{
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
@@ -89,9 +96,10 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress:() => (offset.value = getWidth() * 4)
+                tabPress:() => (offset.value = getPos() * 5)
             })}/>
 
+            {/*Profile*/}
             <Tab.Screen name="Profile" component={Profile} options={{
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
@@ -103,7 +111,7 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress:() => (offset.value = getWidth() * 6)
+                tabPress:() => (offset.value = getPos() * 7)
             })}/>   
         </Tab.Navigator>
 
@@ -117,17 +125,17 @@ export default LoggedInNavigator;
 
 const styles = StyleSheet.create({
     dot: {
-        position: 'absolute',
         width: 6,
         height: 6,
+        bottom: Platform.OS === 'ios' ? '3%' : '1.5%', // To avoid overlapping
         backgroundColor: COLORS.PRIMARY,
-        bottom: '4%',
         borderRadius: 4,
-        left: 51,
+        position: 'absolute',
+        elevation: 10,
     }
 })
 
-const getWidth = () => {
+const getPos = () => {
     let width = Dimensions.get("window").width;
     return width/8;
 }

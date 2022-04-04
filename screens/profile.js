@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     profile: {
         flexDirection: 'row',
         flex: 1,
+        justifyContent: 'center'
     },
     profilePressable: {
         flex: 1
@@ -135,7 +136,8 @@ const styles = StyleSheet.create({
     setting: {
         flexDirection: 'row',
         flex: 1,
-        paddingVertical: 5
+        paddingVertical: 5,
+        justifyContent: 'space-between'
     },
     settingTitle: {
         flex: 2    
