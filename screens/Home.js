@@ -1,10 +1,19 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 
 export default function Home() {
   return (
-    <View>
+    <View style={styles.Home}>
       <Text>Home</Text>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  Home: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})

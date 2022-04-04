@@ -12,6 +12,8 @@ export default function Announcement() {
 const styles = StyleSheet.create({
   Announcement: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

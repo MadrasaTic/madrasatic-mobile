@@ -1,5 +1,5 @@
 import { useRef, React } from 'react';
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, View, Dimensions} from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,8 +9,11 @@ import Home from '../screens/Home';
 import Announcement from '../screens/Announcement';
 import Search from '../screens/Search';
 import { UserIcon, HomeIcon, SearchIcon, SpeakerphoneIcon } from "react-native-heroicons/solid";
-import Animated from 'react-native-reanimated';
-import { Dimensions } from 'react-native-web';
+import Animated, {
+  withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,12 +21,25 @@ const Tab = createBottomTabNavigator();
 // This navigator won't be accessed until the user is logged in
 
 const LoggedInNavigator = ({ navigation }) => {
-
     // Animated tab indicator dot
-    const tabOffsetValue = useRef(new Animated.Value(0)).current;
+    const offset = useSharedValue(0);
+
+    const customSpringStyles = useAnimatedStyle(() => {
+        return {
+          transform: [
+            {
+              translateX: withSpring(offset.value, {
+                damping: 13,
+                stiffness: 100,
+              }),
+            },
+          ],
+        };
+      });
+
+      
     return (
         // Hiding Labels
-
         <>
          <Tab.Navigator 
         screenOptions={{
@@ -31,7 +47,7 @@ const LoggedInNavigator = ({ navigation }) => {
             tabBarStyle: {
                 backgroundColor: COLORS.ACCENT,
                 position: 'absolute',
-                borderRadius: 25
+                borderRadius: 30
             }
         }}>
             <Tab.Screen name="Home" component={Home} options={{
@@ -45,12 +61,7 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
                 }} listeners={({navigation, route}) => ({
                     // on press
-                    tabPress: e => {
-                        Animated.spring(tabOffsetValue, {
-                            toValue: 0,
-                            useNativeDriver: true
-                        }).start();
-                    }
+                    tabPress:() => (offset.value = 1)
                 })}/>
 
             <Tab.Screen name="Search" component={Search} options={{
@@ -64,12 +75,7 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress: e => {
-                    Animated.spring(tabOffsetValue, {
-                        toValue: getWidth() * 2,
-                        useNativeDriver: true
-                    }).start();
-                }
+                tabPress:() => (offset.value = getWidth() * 2)
             })}/>
 
             <Tab.Screen name="Announcement" component={Announcement} options={{
@@ -83,12 +89,7 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress: e => {
-                    Animated.spring(tabOffsetValue, {
-                        toValue: getWidth() * 3,
-                        useNativeDriver: true
-                    }).start();
-                }
+                tabPress:() => (offset.value = getWidth() * 4)
             })}/>
 
             <Tab.Screen name="Profile" component={Profile} options={{
@@ -102,36 +103,32 @@ const LoggedInNavigator = ({ navigation }) => {
                 )
             }} listeners={({navigation, route}) => ({
                 // on press
-                tabPress: e => {
-                    Animated.spring(tabOffsetValue, {
-                        toValue: getWidth() * 4,
-                        useNativeDriver: true
-                    }).start();
-                }
+                tabPress:() => (offset.value = getWidth() * 6)
             })}/>   
         </Tab.Navigator>
 
         {/* tab indicator dot */}
-        <Animated.View style={{
-        position: 'absolute',
-        width: 6,
-        height: 6,
-        backgroundColor: COLORS.PRIMARY,
-        bottom: '4%',
-        borderRadius: 4,
-        left: 45,
-        transform: [
-                {translateX: tabOffsetValue}
-            ]
-        }}/>
+        <Animated.View style={[styles.dot, customSpringStyles]}/>
         </>   
     );
 };
 
 export default LoggedInNavigator;
 
+const styles = StyleSheet.create({
+    dot: {
+        position: 'absolute',
+        width: 6,
+        height: 6,
+        backgroundColor: COLORS.PRIMARY,
+        bottom: '4%',
+        borderRadius: 4,
+        left: 51,
+    }
+})
+
 const getWidth = () => {
     let width = Dimensions.get("window").width;
-    return width/5;
+    return width/8;
 }
 

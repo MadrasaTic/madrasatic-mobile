@@ -12,6 +12,8 @@ export default function Search() {
 const styles = StyleSheet.create({
   Search: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
