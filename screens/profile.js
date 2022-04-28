@@ -6,16 +6,27 @@ import Body from '../components/typography/body';
 import Bold from '../components/typography/bold';
 import COLORS from '../constants/colors';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoggedOut } from '../redux/actions';
+import * as SecureStore from 'expo-secure-store';
 
 const toggleToDarkImage = '../assets/images/toggleToDark.png';
 const signOutImage = '../assets/images/signOut.png';
 
+// This screen is responsible for the "My Profile" page, it contains user data and allows the user
+// to change notification settings
 
 const Profile = ({ navigation }) => {
 
+    const selector = useSelector((state) => state.userReducer);
+    const dispatch = useDispatch();
+
     const signOut = () => {
+        SecureStore.deleteItemAsync('token');
+        dispatch(setLoggedOut());
         navigation.getParent().navigate('Login');
     }
+
 
     const [isEnabledAnnonces, setIsEnabledAnnonces] = useState(false);
     const [isEnabledSignalements, setIsEnabledSignalements] = useState(false);
@@ -32,11 +43,11 @@ const Profile = ({ navigation }) => {
                 {/*User info*/}
                 <View style={styles.profile}>
                     <Pressable style={styles.profilePressable}>
-                        <Image source={require(toggleToDarkImage)} style={styles.profilePic}></Image>
+                        <Image source={{uri:selector.picture}} style={styles.profilePic}></Image>
                     </Pressable>
                     <View style={styles.info}>
-                        <Body style={styles.name}>Nom Prenom</Body>
-                        <Body style={styles.email}>pr.nom@esi-sba.dz</Body>
+                        <Body style={styles.name}>{selector.name}</Body>
+                        <Body style={styles.email}>{selector.email}</Body>
                     </View>
                 </View>
                 {/*Notifications*/}
@@ -92,7 +103,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        marginHorizontal: 90,
+        marginHorizontal: 80,
         flexDirection: 'row'
     },
     toggleToDarkPressable: {
@@ -123,7 +134,8 @@ const styles = StyleSheet.create({
     },
     profilePic: {
         width: 58,
-        height: 58
+        height: 58,
+        borderRadius: 58 / 2,
     },
     notificationSettings:{
         flex: 1,
@@ -159,7 +171,8 @@ const styles = StyleSheet.create({
     },
     signOutImage: {
         width: 20,
-        height: 18,
+        height: 19,
+        marginTop: 3.5
     },
     imageView: {
         flex: 1

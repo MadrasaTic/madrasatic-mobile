@@ -1,12 +1,7 @@
-import react from 'react';
-import {View, Text, Image, StyleSheet, StatusBar} from 'react-native';
+import {View, Image, StyleSheet, StatusBar} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import H3 from '../components/typography/h3';
 import Body from '../components/typography/body';
-import Secondary from '../components/buttons/Secondary';
-import Primary from '../components/buttons/Primary';
-import Tertiary from '../components/buttons/Tertiary';
-import btnText from '../constants/styles';
 import COLORS from '../constants/colors';
 
 const data = [

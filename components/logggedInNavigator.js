@@ -1,20 +1,18 @@
-import { useRef, React } from 'react';
+import { React } from 'react';
 import {StyleSheet, View, Dimensions} from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
 import COLORS from '../constants/colors';
 import Profile from '../screens/profile';
-import Home from '../screens/Home';
-import Announcement from '../screens/Announcement';
-import Search from '../screens/Search';
+import Home from '../screens/home';
+import Announcement from '../screens/announcement';
+import Search from '../screens/search';
 import { UserIcon, HomeIcon, SearchIcon, SpeakerphoneIcon } from "react-native-heroicons/solid";
 import Animated, {
   withSpring,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 

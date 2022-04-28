@@ -3,15 +3,17 @@
     "name": "madrasatic-mobile",
     "slug": "madrasatic-mobile",
     "version": "1.0.0",
+    "scheme": "madrasatic",
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
-      "package": "com.madrasatic.app"
+      "package": "tech.madrasatic.app"
     },
     "ios": {
-      "bundleIdentifier": "com.madrasatic.app"
-    }
+      "bundleIdentifier": "tech.madrasatic.app"
+    },
+    "plugins": ["@react-native-google-signin/google-signin"]
   },
   "name": "madrasatic-mobile"
 }
