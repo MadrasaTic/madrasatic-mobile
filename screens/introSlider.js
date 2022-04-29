@@ -1,5 +1,6 @@
 import {View, Image, StyleSheet, StatusBar} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import H3 from '../components/typography/h3';
 import Body from '../components/typography/body';
 import COLORS from '../constants/colors';
@@ -25,7 +26,7 @@ const data = [
   },
 ];
 
-export default function IntroSlider(props) {
+export default function IntroSlider({ navigation }) {
     const renderItem = ({item}) => {
         return (
             <View style={styles.slide}>
@@ -63,7 +64,9 @@ export default function IntroSlider(props) {
     };
 
     hundleDone = () => {
-        props.hundleDone();
+        const items = [['intro', 'intro']];
+        AsyncStorage.multiSet(items);
+        navigation.navigate('Login');
     }
 
     return (

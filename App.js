@@ -5,7 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Login from './screens/login';
 import IntroSlider from './screens/introSlider';
-import LoggedInNavigator from './components/logggedInNavigator';
+import CheckLoad from './screens/checkLoad';
+import LoggedInNavigator from './components/loggedInNavigator';
 import { Provider } from 'react-redux';
 import Store from './redux/store';
 
@@ -16,13 +17,6 @@ import Store from './redux/store';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(true);
-
-  const hundleIntroDone = () => {
-    setShowIntro(false);
-  };
-
-
 
   let [fontsLoaded] = useFonts({
     WorkSans_700Bold,
@@ -39,17 +33,16 @@ export default function App() {
   } else {
       return (
         <>
-            {showIntro && <IntroSlider hundleDone={hundleIntroDone} />}
-            {
-            !showIntro && <NavigationContainer>
+            <NavigationContainer>
               <Provider store={Store}>
                 <Stack.Navigator screenOptions={{headerShown: false}}>
+                  <Stack.Screen name="CheckLoad" component={CheckLoad} />
+                  <Stack.Screen name="IntroSlider" component={IntroSlider} />
                   <Stack.Screen name="Login" component={Login} />
                   <Stack.Screen name="LoggedInNavigator" component={LoggedInNavigator} />
                 </Stack.Navigator>
               </Provider>
-            </NavigationContainer>}
-            
+            </NavigationContainer>
         </>
       );
   }

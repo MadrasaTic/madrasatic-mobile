@@ -7,6 +7,8 @@ export const ENABLE_NOTIF_ANNONCE = 'ENABLE_NOTIF_ANNONCE';
 export const DISABLE_NOTIF_ANNONCE = 'DISABLE_NOTIF_ANNONCE';
 export const ENABLE_NOTIF_SIGNALS = 'ENABLE_NOTIF_SIGNALS';
 export const DISABLE_NOTIF_SIGNALS = 'DISABLE_NOTIF_SIGNALS';
+export const SET_DARK_THEME = 'SET_DARK_THEME';
+export const SET_LIGHT_THEME = 'SET_LIGHT_THEME';
 
 export const setUserName = name => dispatch => {
     dispatch({
@@ -63,4 +65,16 @@ export const disableNotifSignal = () => dispatch => {
     dispatch({
         type: DISABLE_NOTIF_SIGNALS
     });
+};
+
+export const setDarkTheme = () => dispatch => {
+    dispatch({
+        type: SET_DARK_THEME
+    })
+};
+
+export const setLightTheme = () => dispatch => {
+    dispatch({
+        type: SET_LIGHT_THEME
+    })
 };
