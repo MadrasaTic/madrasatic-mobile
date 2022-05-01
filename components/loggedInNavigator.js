@@ -1,10 +1,10 @@
 import { React } from 'react';
-import {StyleSheet, View, Dimensions} from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import 'react-native-gesture-handler';
 import COLORS from '../constants/colors';
 import Profile from '../screens/profile';
-import Home from '../screens/home';
+import HomePageNavigator from './homePageNavigator';
 import Announcement from '../screens/announcement';
 import Search from '../screens/search';
 import { UserIcon, HomeIcon, SearchIcon, SpeakerphoneIcon } from "react-native-heroicons/solid";
@@ -53,7 +53,7 @@ const LoggedInNavigator = ({ navigation }) => {
             }
         }}>
             {/*Home*/}
-            <Tab.Screen name="Home" component={Home} options={{
+            <Tab.Screen name="HomeNavigator" component={HomePageNavigator} options={{
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <View style={{
