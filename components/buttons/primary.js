@@ -1,10 +1,10 @@
-import { StyleSheet, Pressable } from 'react-native'
+import { StyleSheet, Pressable, Text } from 'react-native'
 import React from 'react'
 import COLORS from '../../constants/colors'
 
 export default function Primary(props) {
   return (
-    <Pressable style={styles.Pressable}>{props.children}</Pressable>
+    <Pressable style={styles.Pressable}><Text>{props.children}</Text></Pressable>
   )
 }
 

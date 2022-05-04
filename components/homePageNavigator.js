@@ -102,15 +102,86 @@ const HomePageNavigator = ({navigation}) => {
                 screenOptions={{
                     drawerStyle:{
                         backgroundColor:  COLORS.ACCENT,
-                    }
+                    },
                 }}
                 drawerContent={customDrawerContent}
                 >
-                <Drawer.Screen name="Signalements" component={Home} />
-                <Drawer.Screen name="Enregistrés" component={Bookmarked} />
-                <Drawer.Screen name="Validés" component={Valid} />
-                <Drawer.Screen name="Aimés" component={Liked} />
-                <Drawer.Screen name="Non aimés" component={Disliked} />
+                <Drawer.Screen 
+                    name="Signalements" 
+                    component={Home} 
+                    options={{
+                        headerStyle:{
+                            backgroundColor: COLORS.ACCENT,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: COLORS.PRIMARY,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}
+                    />
+                <Drawer.Screen 
+                    name="Enregistrés" 
+                    component={Bookmarked}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: COLORS.ACCENT,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: COLORS.PRIMARY,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}/>
+                <Drawer.Screen 
+                    name="Validés" 
+                    component={Valid} 
+                    options={{
+                        headerStyle:{
+                            backgroundColor: COLORS.ACCENT,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: COLORS.PRIMARY,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}/>
+                <Drawer.Screen 
+                    name="Aimés" 
+                    component={Liked}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: COLORS.ACCENT,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: COLORS.PRIMARY,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}/>
+                <Drawer.Screen 
+                    name="Non aimés" 
+                    component={Disliked}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: COLORS.ACCENT,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: COLORS.PRIMARY,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}/>
             </Drawer.Navigator>
         </>
     );

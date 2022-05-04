@@ -1,4 +1,4 @@
-import { useState, React } from 'react';
+import { React } from 'react';
 import { Text, View } from 'react-native';
 import { useFonts, WorkSans_700Bold, WorkSans_500Medium } from '@expo-google-fonts/work-sans';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
