@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     pretitle: {
         fontFamily: 'WorkSans_700Bold',
         fontSize: 10,
-        letterSpacing: 3
+        letterSpacing: 2
     }
 })
 
