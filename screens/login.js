@@ -28,8 +28,8 @@ const Login = ({ navigation }) => {
       const array = url["url"].split('/');
       const uri = array[array.length - 1];
       if (uri) {
-        const token = decodeURI(uri).split("|")[1];
-        SecureStore.setItemAsync('token', token);
+        const token = decodeURI(uri).split("|")[1].toString();
+        SecureStore.setItemAsync("token", token);
         axios.get('http://madrasatic.tech/api/user', 
         { headers: { Authorization: `Bearer ${token}` } })
         .then((res) => {

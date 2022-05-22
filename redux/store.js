@@ -5,7 +5,8 @@ import userReducer from './userReducer';
 import notifReducer from './notifReducer';
 import authReducer from './authReducer';
 import themeReducer from './themeReducer';
+import categoriesReducer from './categoriesReducer';
 
-const reducer = combineReducers({userReducer, notifReducer, authReducer, themeReducer});
+const reducer = combineReducers({userReducer, notifReducer, authReducer, themeReducer, categoriesReducer});
 
 export default Store = configureStore({reducer, middleware: [thunk]});

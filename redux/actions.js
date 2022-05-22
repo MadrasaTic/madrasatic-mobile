@@ -9,6 +9,7 @@ export const ENABLE_NOTIF_SIGNALS = 'ENABLE_NOTIF_SIGNALS';
 export const DISABLE_NOTIF_SIGNALS = 'DISABLE_NOTIF_SIGNALS';
 export const SET_DARK_THEME = 'SET_DARK_THEME';
 export const SET_LIGHT_THEME = 'SET_LIGHT_THEME';
+export const SET_CATEGORIES = 'SET_CATEGORIES';
 
 export const setUserName = name => dispatch => {
     dispatch({
@@ -77,4 +78,10 @@ export const setLightTheme = () => dispatch => {
     dispatch({
         type: SET_LIGHT_THEME
     })
+};
+
+export const setCategories = () => dispatch => {
+    dispatch({
+        type: SET_CATEGORIES
+    });
 };

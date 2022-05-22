@@ -5,6 +5,7 @@ import Bookmarked from '../screens/bookmarked';
 import Valid from '../screens/valid';
 import Liked from '../screens/liked';
 import Disliked from '../screens/disliked';
+import Submit from '../screens/submit';
 import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import COLORS from '../constants/colors';
@@ -182,6 +183,13 @@ const HomePageNavigator = ({navigation}) => {
                             letterSpacing: -1
                         }
                     }}/>
+                <Drawer.Screen
+                    name="Ajouter"
+                    component={Submit}
+                    options={{
+                        headerShown: false
+                    }}
+                    />
             </Drawer.Navigator>
         </>
     );
