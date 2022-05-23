@@ -89,8 +89,8 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
               a.updated_at
             );
           default:
-            return b.last_signalement_v_c.created_at.localeCompare(
-              a.last_signalement_v_c.created_at
+            return b.updated_at.localeCompare(
+              a.updated_at
             );
         }
       });

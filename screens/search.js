@@ -96,8 +96,16 @@ export default function Search({ navigation }) {
         // set signals data
         // console.log(signalRes.data);
         // console.log(categoryRes.data);
-        setData(signalRes.data);
-        setFilteredByType(signalRes.data);
+        setData(signalRes.data.sort((a, b) => {
+          return b.updated_at.localeCompare(
+            a.updated_at
+          );
+        }));
+        setFilteredByType(signalRes.data.sort((a, b) => {
+          return b.updated_at.localeCompare(
+            a.updated_at
+          );
+        }));
 
         // set category data
         

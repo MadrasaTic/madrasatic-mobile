@@ -107,16 +107,17 @@ const styles = StyleSheet.create({
   Card: {
     paddingHorizontal: 20,
     borderRadius: 15,
-    borderColor: COLORS.IRIS_10,
+    
     marginTop: responsiveScreenHeight(25),
-    backgroundColor: COLORS.IRIS_10,
-    shadowColor: COLORS.IRIS_10,
+    backgroundColor: "white",
+    shadowColor: "#000",
     shadowOffset: {
-      width: 1,
-      height: 1,
+      width: 0,
+      height: 2,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
     paddingVertical: 10,
   },
   inCard: {
@@ -134,6 +135,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "55%",
     borderRadius: 8,
+    borderColor: COLORS.IRIS_10,
     marginVertical: 10,
   },
   description: {
