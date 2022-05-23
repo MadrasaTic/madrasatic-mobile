@@ -28,18 +28,20 @@ PODS:
     - ExpoModulesCore
     - GoogleSignIn
     - React-Core
+  - ExpoLinearGradient (11.3.0):
+    - ExpoModulesCore
   - ExpoModulesCore (0.6.5):
     - React-Core
     - ReactCommon/turbomodule/core
   - EXRandom (12.1.2):
     - React-Core
-  - EXSecureStore (11.1.1):
+  - EXSecureStore (11.2.0):
     - ExpoModulesCore
   - EXSplashScreen (0.14.2):
     - ExpoModulesCore
     - React-Core
   - EXStructuredHeaders (2.1.1)
-  - EXUpdates (0.11.6):
+  - EXUpdates (0.11.7):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -324,6 +326,8 @@ PODS:
     - React-cxxreact (= 0.64.3)
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
+  - RNCAsyncStorage (1.17.4):
+    - React-Core
   - RNCMaskedView (0.1.11):
     - React
   - RNGestureHandler (2.1.3):
@@ -378,6 +382,7 @@ DEPENDENCIES:
   - EXManifests (from `../node_modules/expo-manifests/ios`)
   - Expo (from `../node_modules/expo/ios`)
   - "ExpoAdapterGoogleSignIn (from `../node_modules/@react-native-google-signin/google-signin/ios`)"
+  - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
   - EXRandom (from `../node_modules/expo-random/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
@@ -415,6 +420,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
@@ -454,6 +460,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo/ios"
   ExpoAdapterGoogleSignIn:
     :path: "../node_modules/@react-native-google-signin/google-signin/ios"
+  ExpoLinearGradient:
+    :path: "../node_modules/expo-linear-gradient/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
   EXRandom:
@@ -524,6 +532,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
   RNGestureHandler:
@@ -553,12 +563,13 @@ SPEC CHECKSUMS:
   EXManifests: d3464cd2278f4a19cd80c1aa673231570b534c11
   Expo: 534e51e607aba8229293297da5585f4b26f50fa1
   ExpoAdapterGoogleSignIn: 385ea557c00b1feb07f1816e6cf1563e63cfe9c1
+  ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoModulesCore: 32c0ccb47f477d330ee93db72505380adf0de09a
   EXRandom: 1d00fd04d7d874c0c9d1ff87cee59ffe0b638a3d
-  EXSecureStore: b80c74c5ee29d0160c2aace3fd9a24a5edc20015
+  EXSecureStore: aaae919d83aec2faf031e99398807edac0313285
   EXSplashScreen: 21669e598804ee810547dbb6692c8deb5dd8dbf3
   EXStructuredHeaders: 4993087b2010dbcc510f5d92555b36f523425e8d
-  EXUpdates: bd5fa64f02685ed3e96be86b5ca350cdc2cd8d02
+  EXUpdates: a83e036243b0f6ece53a8c1cb883b6751c88a5f8
   EXUpdatesInterface: a9814f422d3cd6e7cfd260d13c27786148ece20e
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
   FBReactNativeSpec: 8f722acf72ac599158e9beb936aa5fc639cd18ae
@@ -591,6 +602,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
+  RNCAsyncStorage: 9367a646dc24e3ab7b6874d79bc1bfd0832dce58
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNGestureHandler: e1099204721a17a89c81fcd1cc2e92143dc040fb
   RNGoogleSignin: d7f8368b82d94f1dec964785d496387ca7f19092
