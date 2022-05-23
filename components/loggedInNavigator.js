@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import "react-native-gesture-handler";
 import COLORS from "../constants/colors";
 import Profile from "../screens/profile";
-import Home from "../screens/home";
 import Announcement from "../screens/announcement";
 import {
   UserIcon,
@@ -18,6 +17,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import SearchNavigator from "./SearchNavigator";
+import HomePageNavigator from "./homePageNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -76,18 +76,10 @@ const LoggedInNavigator = ({ navigation }) => {
         {/*Home*/}
         <Tab.Screen
           name="Home"
-          component={Home}
+          component={HomePageNavigator}
           options={{
-            headerStyle: {
-              backgroundColor: COLORS.ACCENT,
-            },
-            headerTitleStyle: {
-              fontFamily: "WorkSans_700Bold",
-              fontSize: 24,
-              letterSpacing: -1,
-            },
-            headerTintColor: COLORS.PRIMARY,
-            title: "SIgnalements",
+            headerShown: false,
+            title: "Signalements",
             tabBarIcon: ({ focused }) => (
               <View
                 style={{
