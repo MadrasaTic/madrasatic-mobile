@@ -8,7 +8,7 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import COLORS from "../constants/colors";
 import Bold from "../components/typography/bold";
 import Small from "../components/typography/small";
@@ -23,8 +23,13 @@ import {
   responsiveScreenHeight,
   responsiveScreenWidth,
 } from "react-native-responsive-dimensions";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+
 
 const Details = ({ route, navigation }) => {
+
+
   React.useLayoutEffect(() => {
     navigation.getParent().setOptions({
       headerLeft: () => (
@@ -46,6 +51,37 @@ const Details = ({ route, navigation }) => {
   }, [navigation]);
 
   const { item } = route.params;
+  const [upCount, setUpCount] = useState(item.up_votes);
+  const [downCount, setDownCount] = useState(item.down_votes);
+  const [upVoted, setUpVoted] = useState(item.reaction_type === "up" ? true: false);
+  const [downVoted, setDownVoted] = useState(item.reaction_type === "down" ? true: false);
+
+
+  // User reaction
+  const react = async (id, reaction) => {
+    const token = await SecureStore.getItemAsync("token");
+    axios({
+      url: `http://madrasatic.tech/api/signalement/${id}/react/${reaction}`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        axios
+          .get(`http://madrasatic.tech/api/signalement/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            setUpCount(response.data.up_votes);
+            setDownCount(response.data.down_votes);
+            console.log(upCount, downCount);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const capitalize = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -53,7 +89,7 @@ const Details = ({ route, navigation }) => {
 
   return (
     <ScrollView
-    scrollEnabled={true}
+      scrollEnabled={true}
       style={{
         flex: 1,
         backgroundColor: COLORS.IRIS_10,
@@ -99,17 +135,37 @@ const Details = ({ route, navigation }) => {
             { width: 200, justifyContent: "space-between" },
           ]}
         >
-          <Pressable style={styles.pressable}>
-            <ThumbUpIcon color={COLORS.SUBTLE} />
+          <TouchableOpacity
+            style={styles.pressable}
+            onPress={() => {
+              react(item.id, "up");
+              setUpVoted(!upVoted);
+              setDownVoted(false);
+            }}
+          >
+            <ThumbUpIcon
+              color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
+            />
             <Body style={{ color: COLORS.DARK }}>Up votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{item.up_votes}</Small>
-          </Pressable>
+            <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
+          </TouchableOpacity>
 
-          <Pressable style={styles.pressable}>
-            <ThumbDownIcon color={COLORS.SUBTLE} />
+          <TouchableOpacity
+            style={styles.pressable}
+            onPress={() => {
+              react(item.id, "down");
+              setDownVoted(!downVoted);
+              setUpVoted(false);
+            }}
+          >
+            <ThumbDownIcon
+              color={
+                downVoted ? COLORS.PRIMARY : COLORS.SUBTLE
+              }
+            />
             <Body style={{ color: COLORS.DARK }}>Down votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{item.down_votes}</Small>
-          </Pressable>
+            <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
+          </TouchableOpacity>
         </View>
 
         <Pressable style={styles.pressable}>
@@ -148,7 +204,6 @@ const Details = ({ route, navigation }) => {
             </View>
           </View>
         </View>
-
 
         {/* infrastructure */}
         <View style={styles.info}>

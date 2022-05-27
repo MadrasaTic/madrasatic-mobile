@@ -48,13 +48,10 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
   useEffect(() => {
     if (selector.all) {
       setSelectedType(1);
-      console.log(selectedType);
     } else if (selector.signal) {
       setSelectedType(2);
-      console.log(selectedType);
     } else if (selector.announce) {
       setSelectedType(3);
-      console.log(selectedType);
     }
 
     if (selectedType === 1 && search === "" && sortSelector.checked === "") {
@@ -81,16 +78,16 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           case "alphaDSC":
             return b.title.localeCompare(a.title);
           case "dateASC":
-            return a.updated_at.localeCompare(
-              b.updated_at
+            return a.created_at.localeCompare(
+              b.created_at
             );
           case "dateDSC":
-            return b.updated_at.localeCompare(
-              a.updated_at
+            return b.created_at.localeCompare(
+              a.created_at
             );
           default:
-            return b.updated_at.localeCompare(
-              a.updated_at
+            return b.created_at.localeCompare(
+              a.created_at
             );
         }
       });

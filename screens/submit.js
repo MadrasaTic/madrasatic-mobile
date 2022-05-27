@@ -1,5 +1,5 @@
 import Body from '../components/typography/body';
-import { View, TextInput, StyleSheet, Text, Image, Pressable } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-native';
 import { useState } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import COLORS from '../constants/colors';
@@ -31,8 +31,10 @@ const Submit = ({navigation}) => {
     let formData = new FormData();
 
     const [image, setImage] = useState(null);
+    const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
     const pickImage = async () => {
+        requestPermission();
         let result = await ImagePicker.launchCameraAsync({
             allowsEditing: false,
             aspect: [4, 3],
@@ -92,7 +94,7 @@ const Submit = ({navigation}) => {
 
 
 
-            <View style={styles.container}>
+            <ScrollView style={styles.container} scrollEnabled={true}>
                 <View style={styles.titleSection}>
                     <Body style={styles.titleText}>Titre du signalement</Body>
                     <View style={styles.inputContainer}>
@@ -133,7 +135,7 @@ const Submit = ({navigation}) => {
                   {!image ? 
                     <View style={styles.imageSection}>
                         <Pressable style={styles.imgInputContainer} onPress={() => pickImage()}>
-                            <Image style={styles.imgInputPng} source={camera}  />
+                            <Image style={styles.imgInputPng} source={camera} />
                             <View style={styles.imgInputTextContainer}>
                                 <Small>Prendre une photo ou téléverser</Small>
                             </View> 
@@ -156,7 +158,7 @@ const Submit = ({navigation}) => {
                     </Pressable>
                 </View>
 
-            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -231,14 +233,15 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.LIGHT,
         alignItems: 'center',
         paddingVertical: 45,
+        height: 200
     },
     imgInputTextContainer: {
         backgroundColor: COLORS.IRIS_10,
         paddingVertical: 10,
         paddingHorizontal: 5,
         alignItems: 'center',
+        borderRadius: 8,
         width: '80%',
-        borderRadius: 8
     },
     imgInputPng: {
         marginBottom: 10,
@@ -271,7 +274,7 @@ const styles = StyleSheet.create({
     },
     imagePreview: {
         width: '100%',
-        height: 280
+        height: 100
     },
     imgPreviewInputContainer: {
         borderStyle: 'dashed',

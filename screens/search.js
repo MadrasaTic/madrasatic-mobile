@@ -42,7 +42,6 @@ export default function Search({ navigation }) {
   const [data, setData] = useState([]);
   const [category, setCategory] = useState([]);
 
-
   const [filteredByType, setFilteredByType] = useState([]);
   const [selectedType, setSelectedType] = useState(1);
 
@@ -75,43 +74,66 @@ export default function Search({ navigation }) {
   const fetchSignals = async () => {
     setIsLoading(true);
     const token = await SecureStore.getItemAsync("token");
-    console.log(token);
 
-    const signalReq = await axios.get("http://madrasatic.tech/api/signalement", {
+    const signalReq = await axios.get(
+      "http://madrasatic.tech/api/signalement",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
+    const upVoteReq = await axios.get(
+      "http://madrasatic.tech/api/user/upvoted",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const downvoteReq = await axios.get(
+      "http://madrasatic.tech/api/user/downvoted",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const saveReq = await axios.get("http://madrasatic.tech/api/user/saved", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     axios
-      .all([signalReq, categoryReq])
-      .then(axios.spread((...res) => {
-        const signalRes = res[0];
-        const categoryRes = res[1];
+      .all([signalReq, categoryReq, upVoteReq, downvoteReq, saveReq])
+      .then(
+        axios.spread((...res) => {
+          const signalRes = res[0];
+          const categoryRes = res[1];
+          const upVoteRes = res[2];
+          const downVoteRes = res[3];
+          const saveRes = res[4];
+          // map each signal to its category
+          const reactArr = downVoteRes.data.concat(upVoteRes.data);
+          mapCat(signalRes.data, categoryRes.data, reactArr);
 
-        // map each signal to its category
-        mapCat(signalRes.data, categoryRes.data);
+          // mapReact(signalRes.data, upVoteRes.data);
 
-        // set signals data
-        // console.log(signalRes.data);
-        // console.log(categoryRes.data);
-        setData(signalRes.data.sort((a, b) => {
-          return b.updated_at.localeCompare(
-            a.updated_at
+          // set signals data
+
+          setData(
+            signalRes.data.sort((a, b) => {
+              return b.created_at.localeCompare(a.created_at);
+            })
           );
-        }));
-        setFilteredByType(signalRes.data.sort((a, b) => {
-          return b.updated_at.localeCompare(
-            a.updated_at
+          setFilteredByType(
+            signalRes.data.sort((a, b) => {
+              return b.created_at.localeCompare(a.created_at);
+            })
           );
-        }));
 
-        // set category data
-        
-        setCategory(categoryRes.data);
-        setIsLoading(false);
-      }))
+          // set category data
+
+          setCategory(categoryRes.data);
+          setIsLoading(false);
+        })
+      )
       .catch((error) => {
         if (error.response) {
           // Request made and server responded
@@ -128,26 +150,32 @@ export default function Search({ navigation }) {
       });
   };
 
-    // map category with signals
-    const mapCat = async (signalArr, categoryArr) => {
-      signalArr.forEach(e => {
-        categoryArr.map((cat) => {
+  // map category with signals
+  const mapCat = async (signalArr, categoryArr, reactionArr) => {
+    signalArr.forEach((e) => {
+      categoryArr.map((cat) => {
         if (e.last_signalement_v_c.category_id === cat.id) {
-          Object.assign(e, {cat})
+          Object.assign(e, { cat });
         }
       });
-      
-      })
-    }
+      reactionArr.map((r) => {
+        if (e.id === r.pivot.signalement_id) {
+          Object.assign(e, {reaction_type: r.pivot.reaction_type});
+        }
+      });
+    });
+  };
+
+
 
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log(item);
-          navigation.navigate('Details', {
+          navigation.navigate("Details", {
             item: item,
           });
+          console.log(item)
         }}
         onLongPress={() => {
           dispatch(setDetailCardVisible({ item }));
@@ -155,7 +183,7 @@ export default function Search({ navigation }) {
         onPressOut={() => dispatch(setDetailCardInvisible())}
         delayLongPress={250}
       >
-        <SmallCardView item={item}/>
+        <SmallCardView item={item} />
       </TouchableOpacity>
     );
   };
@@ -225,7 +253,7 @@ export default function Search({ navigation }) {
         </TouchableOpacity>
       </Modal>
 
-      <CardView/>
+      <CardView />
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
@@ -266,19 +294,18 @@ const styles = StyleSheet.create({
   Search: {
     flex: 1,
     backgroundColor: "white",
-    paddingBottom: 80
+    paddingBottom: 80,
   },
   container: {
     justifyContent: "flex-start",
     flex: 1,
     margin: 5,
     backgroundColor: "transparent",
-    
   },
   fab: {
     position: "absolute",
     right: 25,
-    bottom: "12%",
+    bottom: "13%",
     shadowColor: COLORS.SUBTLE,
     shadowOpacity: 0.6,
     shadowOffset: {

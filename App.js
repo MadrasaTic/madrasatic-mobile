@@ -12,7 +12,8 @@ import IntroSlider from "./screens/introSlider";
 import CheckLoad from "./screens/checkLoad";
 import LoggedInNavigator from "./components/loggedInNavigator";
 import { Provider } from "react-redux";
-import Store from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import {Store, persistor} from "./redux/store";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,15 +34,17 @@ export default function App() {
       <>
         <NavigationContainer>
           <Provider store={Store}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="CheckLoad" component={CheckLoad} />
-              <Stack.Screen name="IntroSlider" component={IntroSlider} />
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen
-                name="LoggedInNavigator"
-                component={LoggedInNavigator}
-              />
-            </Stack.Navigator>
+            <PersistGate loading={null} persistor={persistor}>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="CheckLoad" component={CheckLoad} />
+                <Stack.Screen name="IntroSlider" component={IntroSlider} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen
+                  name="LoggedInNavigator"
+                  component={LoggedInNavigator}
+                />
+              </Stack.Navigator>
+            </PersistGate>
           </Provider>
         </NavigationContainer>
       </>

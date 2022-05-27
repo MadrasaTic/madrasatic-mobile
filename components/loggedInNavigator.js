@@ -112,7 +112,9 @@ const LoggedInNavigator = ({ navigation }) => {
               fontFamily: "WorkSans_700Bold",
               fontSize: 24,
               letterSpacing: -1,
+              alignItems: 'center'
             },
+            headerTitleAlign: 'center',
             headerLeft: () => null,
             headerTintColor: COLORS.PRIMARY,
             title: "Rechercher",
@@ -148,7 +150,9 @@ const LoggedInNavigator = ({ navigation }) => {
               fontFamily: "WorkSans_700Bold",
               fontSize: 24,
               letterSpacing: -1,
+              alignSelf: 'center'
             },
+            headerTitleAlign: 'center',
             headerTintColor: COLORS.PRIMARY,
             title: "Annonces",
             tabBarIcon: ({ focused }) => (
@@ -183,7 +187,9 @@ const LoggedInNavigator = ({ navigation }) => {
               fontFamily: "WorkSans_700Bold",
               fontSize: 24,
               letterSpacing: -1,
+              alignSelf: 'center'
             },
+            headerTitleAlign: 'center',
             headerTintColor: COLORS.PRIMARY,
             title: "Mon Profile",
             tabBarIcon: ({ focused }) => (
