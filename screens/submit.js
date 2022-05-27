@@ -1,6 +1,6 @@
 import Body from '../components/typography/body';
 import { View, TextInput, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import COLORS from '../constants/colors';
 import Bold from '../components/typography/bold';
@@ -21,17 +21,27 @@ const Submit = ({navigation}) => {
     const [desc, setDesc] = useState('');
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-        {label: 'Item 1', value: '1'},
-        {label: 'Item 2', value: '2'},
-        {label: 'Item 3', value: '3'},
-    ]);
+    const [items, setItems] = useState([]);
 
 
     let formData = new FormData();
 
     const [image, setImage] = useState(null);
     const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
+    const fetchCategories = async () => {
+        axios.get("http://madrasatic.tech/api/category")
+        .then(res => {
+            var items = [];
+            res.data.forEach(element => {
+                items.push({label: element.name, value: element.id});
+            });
+            setItems(items);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    };
 
     const pickImage = async () => {
         requestPermission();
@@ -80,6 +90,9 @@ const Submit = ({navigation}) => {
     };
 
 
+    useEffect(() => {
+        fetchCategories()
+    }, []);
 
     return (
         <View style={styles.screen}>
@@ -153,9 +166,9 @@ const Submit = ({navigation}) => {
                     <Pressable style={styles.validationButton} onPress={() => submit()}>
                         <Bold style={styles.validationText}>VALIDER</Bold>
                     </Pressable>
-                    <Pressable style={styles.saveButton}>
+                    {/*<Pressable style={styles.saveButton}>
                         <Bold style={styles.saveText}>ENREGISTRER</Bold>
-                    </Pressable>
+                </Pressable>*/}
                 </View>
 
             </ScrollView>
@@ -253,7 +266,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
-        marginRight: 15
+        //marginRight: 15
     },
     saveButton: {
         backgroundColor: COLORS.IRIS_10,

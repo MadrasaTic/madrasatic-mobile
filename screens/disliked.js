@@ -17,30 +17,75 @@ const dislikeImage = require('../assets/images/dislike.png');
 export default function Disliked({ navigation }) {
 
   const [data, setData] = useState([]);
+  const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
-    const token = await SecureStore.getItemAsync('token');
-    axios({
-      method: 'get',
-      url: 'http://madrasatic.tech/api/signalement',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    .then((res) => {
-      setData(res.data);
-      setIsLoading(false);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+    setIsLoading(true);
+    const token = await SecureStore.getItemAsync("token");
+
+
+    const signalReq = await axios.get("http://madrasatic.tech/api/user/downvoted", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    axios
+      .all([signalReq, categoryReq])
+      .then(axios.spread((...res) => {
+        const signalRes = res[0];
+        const categoryRes = res[1];
+
+        // map each signal to its category
+        mapCat(signalRes.data, categoryRes.data);
+
+        // set signals data
+
+        setData(signalRes.data.sort((a, b) => {
+          return b.updated_at.localeCompare(
+            a.updated_at
+          );
+        }));
+
+
+        // set category data
+        
+        setCategory(categoryRes.data);
+        setIsLoading(false);
+      }))
+      .catch((error) => {
+        if (error.response) {
+          // Request made and server responded
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      });
   };
+
+   // map category with signals
+   const mapCat = async (signalArr, categoryArr) => {
+    signalArr.forEach(e => {
+      categoryArr.map((cat) => {
+      if (e.last_signalement_v_c.category_id === cat.id) {
+        Object.assign(e, {cat})
+      }
+    });
+    
+    })
+  }
 
   useEffect(() => {
     fetchData();
   }, []);
-
 
   const SuccessState = () => {
     return (
@@ -64,29 +109,47 @@ export default function Disliked({ navigation }) {
     );
   };
 
-  const Signalement = ({id, title, description, category, last_signalement_v_c, published}) => {
+  const Signalement = ({ item }) => {
     return (
       <Card containerStyle={styles.Card} wrapperStyle={styles.inCard}>
-          <View style={styles.signalHeader}>
-              <Small style={styles.Category}>Catégorie</Small>
-              {published == 1 ? <SuccessState /> : <PendingState />}
-          </View>
-          <Image style={styles.Image} source={{uri: "http://madrasatic.tech/storage/" + last_signalement_v_c.attachement}} />
-          <Bold>{title}</Bold>
-          <Body style={styles.Description}>{description.length < 100 ? description : description.slice(0, 100) + "..."}</Body>
-          <View style={styles.interactiveView}>
-            <View style={styles.likeDislikeView}>
-              <Pressable>
-                <Image style={styles.likeDislikeImage} source={likeImage}/>
-              </Pressable>
-              <Pressable>
-                <Image style={styles.likeDislikeImage} source={dislikeImage}/>
-              </Pressable>
-            </View>
-            <Pressable style={styles.detailButton}>
-              <Bold style={styles.buttonText}>Detail</Bold>
+        <View style={styles.signalHeader}>
+          <Small style={styles.Category}>{item.cat.name}</Small>
+          {item.published == 1 ? <SuccessState /> : <PendingState />}
+        </View>
+        <Image
+          style={styles.Image}
+          source={{
+            uri:
+              "http://madrasatic.tech/storage/" +
+              item.last_signalement_v_c.attachement,
+          }}
+        />
+        <Bold>{item.title}</Bold>
+        <Body style={styles.Description}>
+          {item.description.length < 100
+            ? item.description
+            : item.description.slice(0, 100) + "..."}
+        </Body>
+        <View style={styles.interactiveView}>
+          <View style={styles.likeDislikeView}>
+            <Pressable>
+              <Image style={styles.likeDislikeImage} source={likeImage} />
+            </Pressable>
+            <Pressable>
+              <Image style={styles.likeDislikeImage} source={dislikeImage} />
             </Pressable>
           </View>
+          <Pressable
+            style={styles.detailButton}
+            onPress={() => {
+              navigation.navigate("Details", {
+                item: item,
+              });
+            }}
+          >
+            <Bold style={styles.buttonText}>Detail</Bold>
+          </Pressable>
+        </View>
       </Card>
     );
   };
@@ -96,7 +159,7 @@ export default function Disliked({ navigation }) {
     <SafeAreaView style={styles.Container}>
       <FlatList 
         data={data} 
-        renderItem={({item}) => <Signalement {...item} />} 
+        renderItem={({item}) => <Signalement item={item} />} 
         keyExtractor={item => item.id} 
         onRefresh={() => fetchData()}
         refreshing={isLoading}

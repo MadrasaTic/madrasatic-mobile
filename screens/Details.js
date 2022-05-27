@@ -13,6 +13,7 @@ import COLORS from "../constants/colors";
 import Bold from "../components/typography/bold";
 import Small from "../components/typography/small";
 import Body from "../components/typography/body";
+import H3 from "../components/typography/h3";
 import {
   ArrowLeftIcon,
   ThumbDownIcon,
@@ -26,16 +27,18 @@ import {
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
+const leftArrow = require('../assets/images/arrowLeft.png');
+
+
 
 const Details = ({ route, navigation }) => {
-
 
   React.useLayoutEffect(() => {
     navigation.getParent().setOptions({
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Search");
+            navigation.goBack();
             navigation.getParent().setOptions({
               headerLeft: () => null,
               title: "Rechercher",
@@ -46,7 +49,7 @@ const Details = ({ route, navigation }) => {
           <ArrowLeftIcon color={COLORS.PRIMARY} />
         </TouchableOpacity>
       ),
-      title: "Detailles",
+      title: "Détails",
     });
   }, [navigation]);
 
@@ -88,7 +91,9 @@ const Details = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView
+
+
+      <ScrollView
       scrollEnabled={true}
       style={{
         flex: 1,
@@ -96,6 +101,18 @@ const Details = ({ route, navigation }) => {
         alignContent: "center",
       }}
     >
+
+    {navigation.getState().type == "drawer" && 
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+            <Pressable style={styles.headerPressable} onPress={() => navigation.goBack()}>
+                <Image source={leftArrow} style={styles.headerImg} />
+            </Pressable>
+            <H3 style={styles.headerText}>Détails</H3>
+        </View>
+      </View>}
+
+
       {/* card infos */}
       <View style={styles.cardContainer}>
         <Image
@@ -229,7 +246,10 @@ const Details = ({ route, navigation }) => {
       {/* TODO: Signalements rattachés */}
       <View></View>
     </ScrollView>
-  );
+    )
+
+
+    ;
 };
 
 export default Details;
@@ -308,5 +328,25 @@ const styles = StyleSheet.create({
   },
   info: {
     marginBottom: 30,
+  },
+  header: {
+    backgroundColor: COLORS.ACCENT,
+    height: 120,
+  },
+  headerContent: {
+    paddingTop: 75,
+    paddingHorizontal: 25,
+    flexDirection: 'row',
+  },
+  headerImg: {
+      width: 24,
+      height: 24,
+  },
+  headerPressable: { 
+      marginRight: 110,
+      paddingTop: 5
+  },
+  headerText: {
+      color: COLORS.PRIMARY,
   },
 });

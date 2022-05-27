@@ -212,7 +212,7 @@ export default function Home({ navigation }) {
     return (
       <Card containerStyle={styles.Card} wrapperStyle={styles.inCard}>
         <View style={styles.signalHeader}>
-          <Small style={styles.Category}>Catégorie</Small>
+          <Small style={styles.Category}>{item.cat.name}</Small>
           {item.published == 1 ? <SuccessState /> : <PendingState />}
         </View>
         <Image
@@ -241,9 +241,8 @@ export default function Home({ navigation }) {
           <Pressable
             style={styles.detailButton}
             onPress={() => {
-              navigation.navigate("SearchNavigator", {
-                screen: "Details",
-                params: { item: item },
+              navigation.navigate("Details", {
+                item: item,
               });
             }}
           >
