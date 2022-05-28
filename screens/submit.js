@@ -107,7 +107,7 @@ const Submit = ({navigation}) => {
 
 
 
-            <ScrollView style={styles.container} scrollEnabled={true}>
+            <View style={styles.container} scrollEnabled={true}>
                 <View style={styles.titleSection}>
                     <Body style={styles.titleText}>Titre du signalement</Body>
                     <View style={styles.inputContainer}>
@@ -171,7 +171,7 @@ const Submit = ({navigation}) => {
                 </Pressable>*/}
                 </View>
 
-            </ScrollView>
+            </View>
         </View>
     );
 };
@@ -191,7 +191,8 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     categorySection: {
-        marginBottom: 10
+        marginBottom: 10,
+        zIndex: 1000
     },
     descSection: {
         marginBottom: 10
@@ -203,7 +204,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     screen: {
-        backgroundColor: '#FFF'
+        backgroundColor: '#FFF',
+        flex: 1
     },  
     titleInput: {
         height: 40,

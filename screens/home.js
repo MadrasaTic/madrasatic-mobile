@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, SafeAreaView, FlatList } from "react-native";
+import { View, StyleSheet, Image, SafeAreaView, FlatList, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { Card } from "@rneui/themed";
 import Body from "../components/typography/body";
@@ -13,88 +13,6 @@ const likeImage = require("../assets/images/like.png");
 const dislikeImage = require("../assets/images/dislike.png");
 const plusImage = require("../assets/images/plus.png");
 
-const DATA = [
-  {
-    id: "1",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: true,
-  },
-  {
-    id: "2",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "3",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "4",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "5",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "6",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "7",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "8",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "9",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-  {
-    id: "10",
-    title: "Test title",
-    description: "Lorem ipsum blablablaolnljdqsfljkjqsolidqs",
-    category: "Catégorie",
-    image: require("../assets/images/holder.png"),
-    verified: false,
-  },
-];
 
 export default function Home({ navigation }) {
   const [data, setData] = useState([]);
@@ -241,12 +159,13 @@ export default function Home({ navigation }) {
           <Pressable
             style={styles.detailButton}
             onPress={() => {
-              navigation.navigate("Details", {
-                item: item,
+              navigation.getParent().navigate("Details", {
+                id: item.id,
+                cat: item.cat
               });
             }}
           >
-            <Bold style={styles.buttonText}>Detail</Bold>
+            <Bold style={styles.buttonText}>Détails</Bold>
           </Pressable>
         </View>
       </Card>
@@ -262,12 +181,12 @@ export default function Home({ navigation }) {
         onRefresh={() => fetchData()}
         refreshing={isLoading}
       />
-      <Pressable
+      <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate("Ajouter")}
       >
         <Image source={plusImage} style={styles.plusImage} />
-      </Pressable>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

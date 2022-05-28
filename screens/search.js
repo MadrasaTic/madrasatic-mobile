@@ -84,34 +84,16 @@ export default function Search({ navigation }) {
     const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    const upVoteReq = await axios.get(
-      "http://madrasatic.tech/api/user/upvoted",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const downvoteReq = await axios.get(
-      "http://madrasatic.tech/api/user/downvoted",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const saveReq = await axios.get("http://madrasatic.tech/api/user/saved", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
 
     axios
-      .all([signalReq, categoryReq, upVoteReq, downvoteReq, saveReq])
+      .all([signalReq, categoryReq])
       .then(
         axios.spread((...res) => {
           const signalRes = res[0];
           const categoryRes = res[1];
-          const upVoteRes = res[2];
-          const downVoteRes = res[3];
-          const saveRes = res[4];
+
           // map each signal to its category
-          const reactArr = downVoteRes.data.concat(upVoteRes.data);
-          mapCat(signalRes.data, categoryRes.data, reactArr);
+          mapCat(signalRes.data, categoryRes.data);
 
           // mapReact(signalRes.data, upVoteRes.data);
 
@@ -158,11 +140,6 @@ export default function Search({ navigation }) {
           Object.assign(e, { cat });
         }
       });
-      reactionArr.map((r) => {
-        if (e.id === r.pivot.signalement_id) {
-          Object.assign(e, {reaction_type: r.pivot.reaction_type});
-        }
-      });
     });
   };
 
@@ -172,10 +149,10 @@ export default function Search({ navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("Details", {
-            item: item,
+          navigation.getParent().navigate("Details", {
+            id: item.id,
+            cat: item.cat
           });
-          console.log(item)
         }}
         onLongPress={() => {
           dispatch(setDetailCardVisible({ item }));

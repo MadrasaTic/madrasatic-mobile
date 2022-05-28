@@ -16,8 +16,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import SearchNavigator from "./SearchNavigator";
 import HomePageNavigator from "./homePageNavigator";
+import Search from "../screens/search";
 
 const Tab = createBottomTabNavigator();
 
@@ -101,8 +101,8 @@ const LoggedInNavigator = ({ navigation }) => {
 
         {/*Search*/}
         <Tab.Screen
-          name="SearchNavigator"
-          component={SearchNavigator}
+          name="Search"
+          component={Search}
           options={{
             headerStyle: {
               backgroundColor: COLORS.ACCENT,

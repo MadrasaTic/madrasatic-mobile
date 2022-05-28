@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import COLORS from "../constants/colors";
@@ -26,39 +27,82 @@ import {
 } from "react-native-responsive-dimensions";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import { useSelector, useDispatch } from "react-redux";
+import { setItem } from "../redux/actions";
 
-const leftArrow = require('../assets/images/arrowLeft.png');
-
-
+const leftArrow = require("../assets/images/arrowLeft.png");
 
 const Details = ({ route, navigation }) => {
+  // React.useLayoutEffect(() => {
+  //   navigation.getParent().setOptions({
+  //     headerLeft: () => (
+  //       <TouchableOpacity
+  //         onPress={() => {
+  //           navigation.goBack();
+  //           navigation.getParent().setOptions({
+  //             headerLeft: () => null,
+  //             title: "Rechercher",
+  //           });
+  //         }}
+  //         style={{ marginLeft: 10 }}
+  //       >
+  //         <ArrowLeftIcon color={COLORS.PRIMARY} />
+  //       </TouchableOpacity>
+  //     ),
+  //     title: "Détails",
+  //   });
+  // }, [navigation]);
 
-  React.useLayoutEffect(() => {
-    navigation.getParent().setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-            navigation.getParent().setOptions({
-              headerLeft: () => null,
-              title: "Rechercher",
-            });
-          }}
-          style={{ marginLeft: 10 }}
-        >
-          <ArrowLeftIcon color={COLORS.PRIMARY} />
-        </TouchableOpacity>
-      ),
-      title: "Détails",
-    });
-  }, [navigation]);
+  const selector = useSelector((state) => state.itemReducer);
+  const dispatch = useDispatch();
 
-  const { item } = route.params;
-  const [upCount, setUpCount] = useState(item.up_votes);
-  const [downCount, setDownCount] = useState(item.down_votes);
-  const [upVoted, setUpVoted] = useState(item.reaction_type === "up" ? true: false);
-  const [downVoted, setDownVoted] = useState(item.reaction_type === "down" ? true: false);
+  const { id, cat } = route.params;
+  const [upCount, setUpCount] = useState(0);
+  const [downCount, setDownCount] = useState(0);
+  const [upVoted, setUpVoted] = useState(false);
+  const [downVoted, setDownVoted] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    fetchItem(id);
+    console.log(id);
+    return () => {};
+  }, []);
+
+  //fecth signal
+  const fetchItem = async (id) => {
+    setIsLoading(true);
+    const token = await SecureStore.getItemAsync("token");
+    axios
+      .get(`http://madrasatic.tech/api/signalement/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        dispatch(setItem(res.data));
+        setUpCount(res.data.up_votes);
+        setDownCount(res.data.down_votes);
+        setUpVoted(res.data.isReacted === "up" ? true : false);
+        setDownVoted(res.data.isReacted === "down" ? true : false);
+        setSaved(res.data.isSaved);
+        console.log(selector.item);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        if (error.response) {
+          // Request made and server responded
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      });
+  };
 
   // User reaction
   const react = async (id, reaction) => {
@@ -70,17 +114,23 @@ const Details = ({ route, navigation }) => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
-        axios
-          .get(`http://madrasatic.tech/api/signalement/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((response) => {
-            setUpCount(response.data.up_votes);
-            setDownCount(response.data.down_votes);
-            console.log(upCount, downCount);
-          });
-      })
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // User reaction
+  const bookMark = async (id) => {
+    const token = await SecureStore.getItemAsync("token");
+    axios({
+      url: `http://madrasatic.tech/api/signalement/${id}/save`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -91,165 +141,196 @@ const Details = ({ route, navigation }) => {
   };
 
   return (
-
-
-      <ScrollView
-      scrollEnabled={true}
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.IRIS_10,
-        alignContent: "center",
-      }}
-    >
-
-    {navigation.getState().type == "drawer" && 
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-            <Pressable style={styles.headerPressable} onPress={() => navigation.goBack()}>
-                <Image source={leftArrow} style={styles.headerImg} />
-            </Pressable>
-            <H3 style={styles.headerText}>Détails</H3>
+    <>
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={COLORS.PRIMARY} />
         </View>
-      </View>}
-
-
-      {/* card infos */}
-      <View style={styles.cardContainer}>
-        <Image
-          source={{
-            uri:
-              "http://madrasatic.tech/storage/" +
-              item.last_signalement_v_c.attachement,
+      ) : (
+        <ScrollView
+          scrollEnabled={true}
+          style={{
+            flex: 1,
+            backgroundColor: COLORS.IRIS_10,
+            alignContent: "center",
           }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.cardContent}>
-          <Bold style={styles.title}>{capitalize(item.title)}</Bold>
-
-          {/* FIXME: if Annonce ne pas afficher etat */}
-          <View style={styles.status}>
-            <View style={styles.statusIndicator}></View>
-            <Small style={{ color: COLORS.SUBTLE }}>
-              {item.last_signalement_v_c.state_id}
-            </Small>
-          </View>
-
-          <Small style={{ color: COLORS.SUBTLE }}>{item.cat.name}</Small>
-        </View>
-      </View>
-
-      {/* TODO: reactions */}
-      <View
-        style={[
-          styles.reactions,
-          { marginHorizontal: 15, justifyContent: "space-around" },
-        ]}
-      >
-        <View
-          style={[
-            styles.reactions,
-            { width: 200, justifyContent: "space-between" },
-          ]}
         >
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={() => {
-              react(item.id, "up");
-              setUpVoted(!upVoted);
-              setDownVoted(false);
-            }}
-          >
-            <ThumbUpIcon
-              color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerContent}>
+              <TouchableOpacity
+                style={styles.headerPressable}
+                onPress={() => navigation.goBack()}
+              >
+                <ArrowLeftIcon color={COLORS.PRIMARY} />
+              </TouchableOpacity>
+              <H3 style={styles.headerText}>Détails</H3>
+            </View>
+          </View>
+
+          {/* card infos */}
+          <View style={styles.cardContainer}>
+            <Image
+              source={{
+                uri:
+                  "http://madrasatic.tech/storage/" +
+                  selector.item.last_signalement_v_c.attachement,
+              }}
+              style={styles.image}
+              resizeMode="cover"
             />
-            <Body style={{ color: COLORS.DARK }}>Up votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
-          </TouchableOpacity>
+            <View style={styles.cardContent}>
+              <Bold style={styles.title}>
+                {capitalize(selector.item.title)}
+              </Bold>
 
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={() => {
-              react(item.id, "down");
-              setDownVoted(!downVoted);
-              setUpVoted(false);
-            }}
+              {/* FIXME: if Annonce ne pas afficher etat */}
+              <View style={styles.status}>
+                <View style={styles.statusIndicator}></View>
+                <Small style={{ color: COLORS.SUBTLE }}>
+                  {selector.item.last_signalement_v_c.state_id}
+                </Small>
+              </View>
+
+              <Small style={{ color: COLORS.SUBTLE }}>{cat.name}</Small>
+            </View>
+          </View>
+
+          {/* TODO: reactions */}
+          <View
+            style={[
+              styles.reactions,
+              { marginHorizontal: 15, justifyContent: "space-around" },
+            ]}
           >
-            <ThumbDownIcon
-              color={
-                downVoted ? COLORS.PRIMARY : COLORS.SUBTLE
-              }
-            />
-            <Body style={{ color: COLORS.DARK }}>Down votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
-          </TouchableOpacity>
-        </View>
+            <View
+              style={[
+                styles.reactions,
+                { width: 200, justifyContent: "space-between" },
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.pressable}
+                onPress={() => {
+                  react(selector.item.id, "up");
+                  setUpVoted(!upVoted);
 
-        <Pressable style={styles.pressable}>
-          <BookmarkIcon color={COLORS.SUBTLE} />
-          <Body style={{ color: COLORS.DARK }}>Enregistrer</Body>
-        </Pressable>
-      </View>
+                  if (!upVoted) {
+                    setUpCount(upCount + 1);
+                    console.log(upCount);
+                    if (downCount > 0) setDownCount(downCount - 1);
+                  } else {
+                    if (upCount > 0) setUpCount(upCount - 1);
+                  }
+                  setDownVoted(false);
+                }}
+              >
+                <ThumbUpIcon color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE} />
+                <Body style={{ color: COLORS.DARK }}>Up votes</Body>
+                <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
+              </TouchableOpacity>
 
-      {/* TODO: Details */}
-      <View style={styles.details}>
-        <Body style={styles.description}>{capitalize(item.description)}</Body>
+              <TouchableOpacity
+                style={styles.pressable}
+                onPress={() => {
+                  react(selector.item.id, "down");
+                  setDownVoted(!downVoted);
 
-        <View style={styles.grid}>
-          <View style={styles.column}>
-            <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>Ajouté le:</Body>
-              <Small style={{ color: COLORS.SUBTLE }}>
-                {item.updated_at.split(".")[0].split("T")[0]}
-              </Small>
+                  if (!downVoted) {
+                    if (upCount > 0) setUpCount(upCount - 1);
+                    setDownCount(downCount + 1);
+                  } else {
+                    if (downCount > 0) setDownCount(downCount - 1);
+                  }
+                  setUpVoted(false);
+                }}
+              >
+                <ThumbDownIcon
+                  color={downVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
+                />
+                <Body style={{ color: COLORS.DARK }}>Down votes</Body>
+                <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
+              </TouchableOpacity>
             </View>
 
+            <TouchableOpacity
+              style={styles.pressable}
+              onPress={() => {
+                bookMark(selector.item.id);
+                setSaved(!saved);
+              }}
+            >
+              <BookmarkIcon color={saved ? COLORS.PRIMARY : COLORS.SUBTLE} />
+              <Body style={{ color: COLORS.DARK }}>Enregistrer</Body>
+            </TouchableOpacity>
+          </View>
+
+          {/* TODO: Details */}
+          <View style={styles.details}>
+            <Body style={styles.description}>
+              {capitalize(selector.item.description)}
+            </Body>
+
+            <View style={styles.grid}>
+              <View style={styles.column}>
+                <View style={styles.info}>
+                  <Body style={{ color: COLORS.TEXT }}>Ajouté le:</Body>
+                  <Small style={{ color: COLORS.SUBTLE }}>
+                    {selector.item.updated_at.split(".")[0].split("T")[0]}
+                  </Small>
+                </View>
+
+                <View style={styles.info}>
+                  <Body style={{ color: COLORS.TEXT }}>Par: </Body>
+                  <Small style={{ color: COLORS.SUBTLE }}>
+                    {selector.item.creator.name}
+                  </Small>
+                </View>
+              </View>
+
+              <View style={styles.column}>
+                <View style={styles.info}>
+                  <Body style={{ color: COLORS.TEXT }}>A: </Body>
+                  <Small style={{ color: COLORS.SUBTLE }}>
+                    {selector.item.updated_at.split(".")[0].split("T")[1]}
+                  </Small>
+                </View>
+              </View>
+            </View>
+
+            {/* infrastructure */}
             <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>Par: </Body>
+              <Body style={{ color: COLORS.TEXT }}>Lieu: </Body>
               <Small style={{ color: COLORS.SUBTLE }}>
-                {item.creator.name}
+                {selector.item.annexe &&
+                selector.item.bloc &&
+                selector.item.room
+                  ? selector.item.annexe.name +
+                    " > " +
+                    selector.item.bloc.name +
+                    " > " +
+                    selector.item.room.type +
+                    " " +
+                    selector.item.room.name
+                  : selector.item.annexe &&
+                    selector.item.bloc &&
+                    !selector.item.room
+                  ? selector.item.annexe.name + " > " + selector.item.bloc.name
+                  : selector.item.annexe &&
+                    !selector.item.bloc &&
+                    !selector.item.room
+                  ? selector.item.annexe.name
+                  : "?"}
               </Small>
             </View>
           </View>
 
-          <View style={styles.column}>
-            <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>A: </Body>
-              <Small style={{ color: COLORS.SUBTLE }}>
-                {item.updated_at.split(".")[0].split("T")[1]}
-              </Small>
-            </View>
-          </View>
-        </View>
-
-        {/* infrastructure */}
-        <View style={styles.info}>
-          <Body style={{ color: COLORS.TEXT }}>Lieu: </Body>
-          <Small style={{ color: COLORS.SUBTLE }}>
-            {item.annexe && item.bloc && item.room
-              ? item.annexe.name +
-                " > " +
-                item.bloc.name +
-                " > " +
-                item.room.type +
-                " " +
-                item.room.name
-              : item.annexe && item.bloc && !item.room
-              ? item.annexe.name + " > " + item.bloc.name
-              : item.annexe && !item.bloc && !item.room
-              ? item.annexe.name
-              : "?"}
-          </Small>
-        </View>
-      </View>
-
-      {/* TODO: Signalements rattachés */}
-      <View></View>
-    </ScrollView>
-    )
-
-
-    ;
+          {/* TODO: Signalements rattachés */}
+          <View></View>
+        </ScrollView>
+      )}
+    </>
+  );
 };
 
 export default Details;
@@ -331,22 +412,20 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: COLORS.ACCENT,
-    height: 120,
+    height: 100,
+    paddingBottom: 10,
   },
   headerContent: {
     paddingTop: 75,
     paddingHorizontal: 25,
-    flexDirection: 'row',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  headerImg: {
-      width: 24,
-      height: 24,
-  },
-  headerPressable: { 
-      marginRight: 110,
-      paddingTop: 5
+  headerPressable: {
+    paddingTop: 5,
   },
   headerText: {
-      color: COLORS.PRIMARY,
+    color: COLORS.PRIMARY,
+    right: responsiveScreenWidth(35),
   },
 });

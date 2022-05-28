@@ -35,9 +35,7 @@ export const CHECK_RADIO_BUTTON = 'CHECK_RADIO_BUTTON';
 
 export const SET_ITEM_CATEGORY = 'SET_ITEM_CATEGORY';
 
-export const SET_UPVOTED = "SET_UPVOTED";
-export const SET_DOWNVOTED = "SET_DOWNVOTED";
-export const SET_SAVED = "SET_SAVED";
+export const SET_ITEM = "SET_ITEM";
 
 
 export const setUserName = name => dispatch => {
@@ -205,23 +203,9 @@ export const setItemCategory = ( category ) => dispatch => {
     });
 }
 
-export const setUpVoted = (id) => dispatch => {
+export const setItem = (item) => dispatch => {
     dispatch({
-        type: SET_UPVOTED,
-        payload: id
-    })
-}
-
-export const setDownVoted = (id) => dispatch => {
-    dispatch({
-        type: SET_DOWNVOTED,
-        payload: id
-    })
-}
-
-export const setSaved = (id) => dispatch => {
-    dispatch({
-        type: SET_SAVED,
-        payload: id
+        type: SET_ITEM,
+        payload: item
     })
 }
