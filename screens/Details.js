@@ -30,29 +30,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
 import { setItem } from "../redux/actions";
 
-const leftArrow = require("../assets/images/arrowLeft.png");
-
 const Details = ({ route, navigation }) => {
-  // React.useLayoutEffect(() => {
-  //   navigation.getParent().setOptions({
-  //     headerLeft: () => (
-  //       <TouchableOpacity
-  //         onPress={() => {
-  //           navigation.goBack();
-  //           navigation.getParent().setOptions({
-  //             headerLeft: () => null,
-  //             title: "Rechercher",
-  //           });
-  //         }}
-  //         style={{ marginLeft: 10 }}
-  //       >
-  //         <ArrowLeftIcon color={COLORS.PRIMARY} />
-  //       </TouchableOpacity>
-  //     ),
-  //     title: "Détails",
-  //   });
-  // }, [navigation]);
-
   const selector = useSelector((state) => state.itemReducer);
   const dispatch = useDispatch();
 
@@ -141,194 +119,206 @@ const Details = ({ route, navigation }) => {
   };
 
   return (
+    // <View>
+    //   {/* Header */}
+    //   <View style={styles.header}>
+    //     <View style={styles.headerContent}>
+    //       <TouchableOpacity
+    //         style={styles.headerPressable}
+    //         onPress={() => navigation.goBack()}
+    //       >
+    //         <ArrowLeftIcon color={COLORS.PRIMARY} />
+    //       </TouchableOpacity>
+    //       <H3 style={styles.headerText}>Détails</H3>
+    //     </View>
+    //   </View>
+    // </View>
     <>
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
           <ActivityIndicator size="large" color={COLORS.PRIMARY} />
         </View>
-      ) : (
-        <ScrollView
-          scrollEnabled={true}
-          style={{
-            flex: 1,
-            backgroundColor: COLORS.IRIS_10,
-            alignContent: "center",
+      ) : selector.item &&  <ScrollView
+      scrollEnabled={true}
+      style={{
+        flex: 1,
+        backgroundColor: COLORS.IRIS_10,
+        alignContent: "center",
+      }}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            style={styles.headerPressable}
+            onPress={() => navigation.goBack()}
+          >
+            <ArrowLeftIcon color={COLORS.PRIMARY} />
+          </TouchableOpacity>
+          <H3 style={styles.headerText}>Détails</H3>
+        </View>
+      </View>
+
+      {/* card infos */}
+      <View style={styles.cardContainer}>
+        <Image
+          source={{
+            uri:
+              "http://madrasatic.tech/storage/" +
+              selector.item.last_signalement_v_c.attachement,
+          }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <View style={styles.cardContent}>
+          <Bold style={styles.title}>
+            {capitalize(selector.item.title)}
+          </Bold>
+
+          {/* FIXME: if Annonce ne pas afficher etat */}
+          <View style={styles.status}>
+            <View style={styles.statusIndicator}></View>
+            <Small style={{ color: COLORS.SUBTLE }}>
+              {selector.item.last_signalement_v_c.state_id}
+            </Small>
+          </View>
+
+          <Small style={{ color: COLORS.SUBTLE }}>{cat.name}</Small>
+        </View>
+      </View>
+
+      {/* TODO: reactions */}
+      <View
+        style={[
+          styles.reactions,
+          { marginHorizontal: 15, justifyContent: "space-around" },
+        ]}
+      >
+        <View
+          style={[
+            styles.reactions,
+            { width: 200, justifyContent: "space-between" },
+          ]}
+        >
+          <TouchableOpacity
+            style={styles.pressable}
+            onPress={() => {
+              react(selector.item.id, "up");
+              setUpVoted(!upVoted);
+
+              if (!upVoted) {
+                setUpCount(upCount + 1);
+                console.log(upCount);
+                if (downCount > 0) setDownCount(downCount - 1);
+              } else {
+                if (upCount > 0) setUpCount(upCount - 1);
+              }
+              setDownVoted(false);
+            }}
+          >
+            <ThumbUpIcon color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE} />
+            <Body style={{ color: COLORS.DARK }}>Up votes</Body>
+            <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.pressable}
+            onPress={() => {
+              react(selector.item.id, "down");
+              setDownVoted(!downVoted);
+
+              if (!downVoted) {
+                if (upCount > 0) setUpCount(upCount - 1);
+                setDownCount(downCount + 1);
+              } else {
+                if (downCount > 0) setDownCount(downCount - 1);
+              }
+              setUpVoted(false);
+            }}
+          >
+            <ThumbDownIcon
+              color={downVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
+            />
+            <Body style={{ color: COLORS.DARK }}>Down votes</Body>
+            <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={styles.pressable}
+          onPress={() => {
+            bookMark(selector.item.id);
+            setSaved(!saved);
           }}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerContent}>
-              <TouchableOpacity
-                style={styles.headerPressable}
-                onPress={() => navigation.goBack()}
-              >
-                <ArrowLeftIcon color={COLORS.PRIMARY} />
-              </TouchableOpacity>
-              <H3 style={styles.headerText}>Détails</H3>
-            </View>
-          </View>
+          <BookmarkIcon color={saved ? COLORS.PRIMARY : COLORS.SUBTLE} />
+          <Body style={{ color: COLORS.DARK }}>Enregistrer</Body>
+        </TouchableOpacity>
+      </View>
 
-          {/* card infos */}
-          <View style={styles.cardContainer}>
-            <Image
-              source={{
-                uri:
-                  "http://madrasatic.tech/storage/" +
-                  selector.item.last_signalement_v_c.attachement,
-              }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-            <View style={styles.cardContent}>
-              <Bold style={styles.title}>
-                {capitalize(selector.item.title)}
-              </Bold>
+      {/* TODO: Details */}
+      <View style={styles.details}>
+        <Body style={styles.description}>
+          {capitalize(selector.item.description)}
+        </Body>
 
-              {/* FIXME: if Annonce ne pas afficher etat */}
-              <View style={styles.status}>
-                <View style={styles.statusIndicator}></View>
-                <Small style={{ color: COLORS.SUBTLE }}>
-                  {selector.item.last_signalement_v_c.state_id}
-                </Small>
-              </View>
-
-              <Small style={{ color: COLORS.SUBTLE }}>{cat.name}</Small>
-            </View>
-          </View>
-
-          {/* TODO: reactions */}
-          <View
-            style={[
-              styles.reactions,
-              { marginHorizontal: 15, justifyContent: "space-around" },
-            ]}
-          >
-            <View
-              style={[
-                styles.reactions,
-                { width: 200, justifyContent: "space-between" },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.pressable}
-                onPress={() => {
-                  react(selector.item.id, "up");
-                  setUpVoted(!upVoted);
-
-                  if (!upVoted) {
-                    setUpCount(upCount + 1);
-                    console.log(upCount);
-                    if (downCount > 0) setDownCount(downCount - 1);
-                  } else {
-                    if (upCount > 0) setUpCount(upCount - 1);
-                  }
-                  setDownVoted(false);
-                }}
-              >
-                <ThumbUpIcon color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE} />
-                <Body style={{ color: COLORS.DARK }}>Up votes</Body>
-                <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.pressable}
-                onPress={() => {
-                  react(selector.item.id, "down");
-                  setDownVoted(!downVoted);
-
-                  if (!downVoted) {
-                    if (upCount > 0) setUpCount(upCount - 1);
-                    setDownCount(downCount + 1);
-                  } else {
-                    if (downCount > 0) setDownCount(downCount - 1);
-                  }
-                  setUpVoted(false);
-                }}
-              >
-                <ThumbDownIcon
-                  color={downVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
-                />
-                <Body style={{ color: COLORS.DARK }}>Down votes</Body>
-                <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              style={styles.pressable}
-              onPress={() => {
-                bookMark(selector.item.id);
-                setSaved(!saved);
-              }}
-            >
-              <BookmarkIcon color={saved ? COLORS.PRIMARY : COLORS.SUBTLE} />
-              <Body style={{ color: COLORS.DARK }}>Enregistrer</Body>
-            </TouchableOpacity>
-          </View>
-
-          {/* TODO: Details */}
-          <View style={styles.details}>
-            <Body style={styles.description}>
-              {capitalize(selector.item.description)}
-            </Body>
-
-            <View style={styles.grid}>
-              <View style={styles.column}>
-                <View style={styles.info}>
-                  <Body style={{ color: COLORS.TEXT }}>Ajouté le:</Body>
-                  <Small style={{ color: COLORS.SUBTLE }}>
-                    {selector.item.updated_at.split(".")[0].split("T")[0]}
-                  </Small>
-                </View>
-
-                <View style={styles.info}>
-                  <Body style={{ color: COLORS.TEXT }}>Par: </Body>
-                  <Small style={{ color: COLORS.SUBTLE }}>
-                    {selector.item.creator.name}
-                  </Small>
-                </View>
-              </View>
-
-              <View style={styles.column}>
-                <View style={styles.info}>
-                  <Body style={{ color: COLORS.TEXT }}>A: </Body>
-                  <Small style={{ color: COLORS.SUBTLE }}>
-                    {selector.item.updated_at.split(".")[0].split("T")[1]}
-                  </Small>
-                </View>
-              </View>
-            </View>
-
-            {/* infrastructure */}
+        <View style={styles.grid}>
+          <View style={styles.column}>
             <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>Lieu: </Body>
+              <Body style={{ color: COLORS.TEXT }}>Ajouté le:</Body>
               <Small style={{ color: COLORS.SUBTLE }}>
-                {selector.item.annexe &&
-                selector.item.bloc &&
-                selector.item.room
-                  ? selector.item.annexe.name +
-                    " > " +
-                    selector.item.bloc.name +
-                    " > " +
-                    selector.item.room.type +
-                    " " +
-                    selector.item.room.name
-                  : selector.item.annexe &&
-                    selector.item.bloc &&
-                    !selector.item.room
-                  ? selector.item.annexe.name + " > " + selector.item.bloc.name
-                  : selector.item.annexe &&
-                    !selector.item.bloc &&
-                    !selector.item.room
-                  ? selector.item.annexe.name
-                  : "?"}
+                {selector.item.updated_at.split(".")[0].split("T")[0]}
+              </Small>
+            </View>
+
+            <View style={styles.info}>
+              <Body style={{ color: COLORS.TEXT }}>Par: </Body>
+              <Small style={{ color: COLORS.SUBTLE }}>
+                {selector.item.creator.name}
               </Small>
             </View>
           </View>
 
-          {/* TODO: Signalements rattachés */}
-          <View></View>
-        </ScrollView>
-      )}
+          <View style={styles.column}>
+            <View style={styles.info}>
+              <Body style={{ color: COLORS.TEXT }}>A: </Body>
+              <Small style={{ color: COLORS.SUBTLE }}>
+                {selector.item.updated_at.split(".")[0].split("T")[1]}
+              </Small>
+            </View>
+          </View>
+        </View>
+
+        {/* infrastructure */}
+        <View style={styles.info}>
+          <Body style={{ color: COLORS.TEXT }}>Lieu: </Body>
+          <Small style={{ color: COLORS.SUBTLE }}>
+            {selector.item.annexe &&
+            selector.item.bloc &&
+            selector.item.room
+              ? selector.item.annexe.name +
+                " > " +
+                selector.item.bloc.name +
+                " > " +
+                selector.item.room.type +
+                " " +
+                selector.item.room.name
+              : selector.item.annexe &&
+                selector.item.bloc &&
+                !selector.item.room
+              ? selector.item.annexe.name + " > " + selector.item.bloc.name
+              : selector.item.annexe &&
+                !selector.item.bloc &&
+                !selector.item.room
+              ? selector.item.annexe.name
+              : "?"}
+          </Small>
+        </View>
+      </View>
+
+      {/* TODO: Signalements rattachés */}
+      <View></View>
+    </ScrollView>}
     </>
   );
 };

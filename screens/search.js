@@ -27,6 +27,7 @@ import {
   check,
   setDetailCardVisible,
   setDetailCardInvisible,
+  setItem
 } from "../redux/actions";
 import Sort from "../components/Sort";
 import SmallCardView from "../components/SmallCardView";
@@ -109,6 +110,7 @@ export default function Search({ navigation }) {
               return b.created_at.localeCompare(a.created_at);
             })
           );
+          
 
           // set category data
 
@@ -153,6 +155,7 @@ export default function Search({ navigation }) {
             id: item.id,
             cat: item.cat
           });
+          dispatch(setItem(item));
         }}
         onLongPress={() => {
           dispatch(setDetailCardVisible({ item }));

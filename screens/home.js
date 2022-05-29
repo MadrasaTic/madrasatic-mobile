@@ -1,4 +1,11 @@
-import { View, StyleSheet, Image, SafeAreaView, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { Card } from "@rneui/themed";
 import Body from "../components/typography/body";
@@ -8,16 +15,18 @@ import COLORS from "../constants/colors";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import { useDispatch, useSelector } from "react-redux";
+import { setItem } from "../redux/actions";
 
 const likeImage = require("../assets/images/like.png");
 const dislikeImage = require("../assets/images/dislike.png");
 const plusImage = require("../assets/images/plus.png");
 
-
 export default function Home({ navigation }) {
   const [data, setData] = useState([]);
   const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
   // const fetchData = async () => {
   //   const token = await SecureStore.getItemAsync("token");
@@ -41,37 +50,40 @@ export default function Home({ navigation }) {
     setIsLoading(true);
     const token = await SecureStore.getItemAsync("token");
 
-
-    const signalReq = await axios.get("http://madrasatic.tech/api/signalement", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const signalReq = await axios.get(
+      "http://madrasatic.tech/api/signalement",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     axios
       .all([signalReq, categoryReq])
-      .then(axios.spread((...res) => {
-        const signalRes = res[0];
-        const categoryRes = res[1];
+      .then(
+        axios.spread((...res) => {
+          const signalRes = res[0];
+          const categoryRes = res[1];
 
-        // map each signal to its category
-        mapCat(signalRes.data, categoryRes.data);
+          // map each signal to its category
+          mapCat(signalRes.data, categoryRes.data);
 
-        // set signals data
+          // set signals data
 
-        setData(signalRes.data.sort((a, b) => {
-          return b.updated_at.localeCompare(
-            a.updated_at
+          setData(
+            signalRes.data.sort((a, b) => {
+              return b.updated_at.localeCompare(a.updated_at);
+            })
           );
-        }));
 
+          // set category data
 
-        // set category data
-        
-        setCategory(categoryRes.data);
-        setIsLoading(false);
-      }))
+          setCategory(categoryRes.data);
+          setIsLoading(false);
+        })
+      )
       .catch((error) => {
         if (error.response) {
           // Request made and server responded
@@ -88,17 +100,16 @@ export default function Home({ navigation }) {
       });
   };
 
-   // map category with signals
-   const mapCat = async (signalArr, categoryArr) => {
-    signalArr.forEach(e => {
+  // map category with signals
+  const mapCat = async (signalArr, categoryArr) => {
+    signalArr.forEach((e) => {
       categoryArr.map((cat) => {
-      if (e.last_signalement_v_c.category_id === cat.id) {
-        Object.assign(e, {cat})
-      }
+        if (e.last_signalement_v_c.category_id === cat.id) {
+          Object.assign(e, { cat });
+        }
+      });
     });
-    
-    })
-  }
+  };
 
   useEffect(() => {
     fetchData();
@@ -161,8 +172,9 @@ export default function Home({ navigation }) {
             onPress={() => {
               navigation.getParent().navigate("Details", {
                 id: item.id,
-                cat: item.cat
+                cat: item.cat,
               });
+              dispatch(setItem(item));
             }}
           >
             <Bold style={styles.buttonText}>Détails</Bold>
