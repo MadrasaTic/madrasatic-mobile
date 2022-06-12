@@ -7,20 +7,20 @@ import COLORS from '../constants/colors';
 
 const data = [
   {
-    title: 'Title 1',
-    text: 'Description.\nDescription. Description.',
+    title: 'Bienvenue à MadrasaTIC !',
+    text: 'Système de signalement interne de l\'ESI',
     image: require('../assets/images/App_wireframe.png'),
     bg: '#59b2ab',
   },
   {
-    title: 'Title 2',
-    text: 'Description.\nDescription. Description.',
+    title: 'Ajouter des signalements en temps réel !',
+    text: 'Permet la communication instante lors d\'un incident',
     image: require('../assets/images/Dashboard.png'),
     bg: '#febe29',
   },
   {
-    title: 'Title 3',
-    text: "Description.\nDescription. Description.",
+    title: 'Consultez l\'état de votre signalement !',
+    text: "Savoir si signalement est traité ou pas",
     image: require('../assets/images/Online_information.png'),
     bg: '#22bcb5',
   },
