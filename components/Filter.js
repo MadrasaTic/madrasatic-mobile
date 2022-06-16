@@ -34,14 +34,14 @@ import {
   setSortVisible,
   setSortInvisible,
 } from "../redux/actions";
-import DropDownPicker from 'react-native-dropdown-picker';
-
+import DropDownPicker from "react-native-dropdown-picker";
 
 const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
   var [search, setSearch] = useState("");
 
   const selector = useSelector((state) => state.filterReducer);
   const sortSelector = useSelector((state) => state.sortReducer);
+  const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
   //FIXME: every filter here is for testing
@@ -63,13 +63,12 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
         (signal) =>
           // TODO: filter by type (signalement / annonce)
           (signal.title.toUpperCase().includes(search.toUpperCase()) ||
-          signal.description.toUpperCase().includes(search.toUpperCase()) ||
-          signal.cat.name.toUpperCase().includes(search.toUpperCase())||
-          signal.cat.priority.name.toUpperCase() === search.toUpperCase())
-        &&
-        (!selector.traite
-          ? (signal.last_signalement_v_c.state_id === 1)
-          : (signal.last_signalement_v_c.state_id  != 1))
+            signal.description.toUpperCase().includes(search.toUpperCase()) ||
+            signal.cat.name.toUpperCase().includes(search.toUpperCase()) ||
+            signal.cat.priority.name.toUpperCase() === search.toUpperCase()) &&
+          (!selector.traite
+            ? signal.last_signalement_v_c.state_id === 1
+            : signal.last_signalement_v_c.state_id != 1)
       )
       .sort((a, b) => {
         switch (sortSelector.checked) {
@@ -78,24 +77,20 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           case "alphaDSC":
             return b.title.localeCompare(a.title);
           case "dateASC":
-            return a.created_at.localeCompare(
-              b.created_at
-            );
+            return a.created_at.localeCompare(b.created_at);
           case "dateDSC":
-            return b.created_at.localeCompare(
-              a.created_at
-            );
+            return b.created_at.localeCompare(a.created_at);
           default:
-            return b.created_at.localeCompare(
-              a.created_at
-            );
+            return b.created_at.localeCompare(a.created_at);
         }
       });
     setFilteredByType(filtered);
   }, [selectedType, search, selector, sortSelector]);
 
   return (
-    <View style={styles.filter}>
+    <View
+      style={{ backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -104,9 +99,12 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
         }}
       >
         <Input
-          inputContainerStyle={styles.search}
+          inputContainerStyle={[
+            styles.search,
+            { backgroundColor: themeSelector.theme.CLOUD },
+          ]}
           placeholder="Rechercher"
-          rightIcon={<SearchIcon color={COLORS.SUBTLE} />}
+          rightIcon={<SearchIcon color={themeSelector.theme.SUBTLE} />}
           containerStyle={{
             height: 50,
             marginTop: 10,
@@ -121,7 +119,7 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
             dispatch(setSortVisible());
           }}
         >
-          <SortDescendingIcon color={COLORS.PRIMARY} />
+          <SortDescendingIcon color={themeSelector.theme.PRIMARY} />
         </TouchableOpacity>
       </View>
 
@@ -132,20 +130,58 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
       >
         {/* Type filters */}
         <Pressable
-          style={selector.all ? styles.btnPress : styles.btnNormal}
+          style={
+            selector.all
+              ? [
+                  styles.btnPress,
+                  {
+                    backgroundColor: themeSelector.theme.PRIMARY,
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+              : [
+                  styles.btnNormal,
+                  {
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+          }
           onPress={() => {
             dispatch(enableAll());
           }}
         >
           <Pretitle
-            style={{ color: selector.all ? COLORS.CLOUD : COLORS.PRIMARY }}
+            style={{
+              color: selector.all
+                ? themeSelector.isLight
+                  ? COLORS.ACCENT
+                  : COLORS.DARK
+                : themeSelector.isLight
+                ? COLORS.PRIMARY
+                : COLORS.LIGHT,
+            }}
           >
             Tous
           </Pretitle>
         </Pressable>
 
         <Pressable
-          style={selector.signal ? styles.btnPress : styles.btnNormal}
+          style={
+            selector.signal
+              ? [
+                  styles.btnPress,
+                  {
+                    backgroundColor: themeSelector.theme.PRIMARY,
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+              : [
+                  styles.btnNormal,
+                  {
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+          }
           onPress={() => {
             !selector.signal
               ? dispatch(enableSignals())
@@ -153,14 +189,37 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           }}
         >
           <Pretitle
-            style={{ color: selector.signal ? COLORS.CLOUD : COLORS.PRIMARY }}
+            style={{
+              color: selector.signal
+                ? themeSelector.isLight
+                  ? COLORS.ACCENT
+                  : COLORS.DARK
+                : themeSelector.isLight
+                ? COLORS.PRIMARY
+                : COLORS.LIGHT,
+            }}
           >
             Signalements
           </Pretitle>
         </Pressable>
 
         <Pressable
-          style={selector.announce ? styles.btnPress : styles.btnNormal}
+          style={
+            selector.announce
+              ? [
+                  styles.btnPress,
+                  {
+                    backgroundColor: themeSelector.theme.PRIMARY,
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+              : [
+                  styles.btnNormal,
+                  {
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+          }
           onPress={() => {
             !selector.announce
               ? dispatch(enableAnnounce())
@@ -168,18 +227,46 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           }}
         >
           <Pretitle
-            style={{ color: selector.announce ? COLORS.CLOUD : COLORS.PRIMARY }}
+            style={{
+              color: selector.announce
+                ? themeSelector.isLight
+                  ? COLORS.ACCENT
+                  : COLORS.DARK
+                : themeSelector.isLight
+                ? COLORS.PRIMARY
+                : COLORS.LIGHT,
+            }}
           >
             Annonces
           </Pretitle>
         </Pressable>
 
         {/* Separator View */}
-        <View style={styles.separator} />
+        <View
+          style={[
+            styles.separator,
+            { backgroundColor: themeSelector.theme.SUBTLE },
+          ]}
+        />
 
         {/* Status filters */}
         <Pressable
-          style={selector.traite ? styles.btnPress : styles.btnNormal}
+          style={
+            selector.traite
+              ? [
+                  styles.btnPress,
+                  {
+                    backgroundColor: themeSelector.theme.PRIMARY,
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+              : [
+                  styles.btnNormal,
+                  {
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+          }
           onPress={() => {
             !selector.traite
               ? dispatch(enableTraite())
@@ -187,7 +274,15 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           }}
         >
           <Pretitle
-            style={{ color: selector.traite ? COLORS.CLOUD : COLORS.PRIMARY }}
+            style={{
+              color: selector.traite
+                ? themeSelector.isLight
+                  ? COLORS.ACCENT
+                  : COLORS.DARK
+                : themeSelector.isLight
+                ? COLORS.PRIMARY
+                : COLORS.LIGHT,
+            }}
           >
             Traité
           </Pretitle>
@@ -195,7 +290,20 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
 
         <Pressable
           style={
-            selector.enCoursDeTraitement ? styles.btnPress : styles.btnNormal
+            selector.enCoursDeTraitement
+              ? [
+                  styles.btnPress,
+                  {
+                    backgroundColor: themeSelector.theme.PRIMARY,
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
+              : [
+                  styles.btnNormal,
+                  {
+                    borderColor: themeSelector.theme.PRIMARY,
+                  },
+                ]
           }
           onPress={() => {
             !selector.enCoursDeTraitement
@@ -206,8 +314,12 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
           <Pretitle
             style={{
               color: selector.enCoursDeTraitement
-                ? COLORS.CLOUD
-                : COLORS.PRIMARY,
+                ? themeSelector.isLight
+                  ? COLORS.ACCENT
+                  : COLORS.DARK
+                : themeSelector.isLight
+                ? COLORS.PRIMARY
+                : COLORS.LIGHT,
             }}
           >
             En cours
@@ -215,9 +327,12 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
         </Pressable>
 
         {/* Separator View */}
-        <View style={styles.separator} />
-
-        
+        <View
+          style={[
+            styles.separator,
+            { backgroundColor: themeSelector.theme.SUBTLE },
+          ]}
+        />
       </ScrollView>
     </View>
   );
@@ -248,14 +363,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
-    backgroundColor: COLORS.PRIMARY,
-  },
-  filter: {
-    backgroundColor: COLORS.ACCENT,
   },
   search: {
     height: 50,
-    backgroundColor: COLORS.CLOUD,
     borderRadius: 8,
     fontSize: 16,
     fontFamily: "WorkSans_500Medium",
@@ -265,7 +375,6 @@ const styles = StyleSheet.create({
   separator: {
     width: 2,
     height: 35,
-    backgroundColor: COLORS.SUBTLE,
     marginVertical: 2,
     marginRight: 10,
     opacity: 0.3,

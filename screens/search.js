@@ -27,7 +27,7 @@ import {
   check,
   setDetailCardVisible,
   setDetailCardInvisible,
-  setItem
+  setItem,
 } from "../redux/actions";
 import Sort from "../components/Sort";
 import SmallCardView from "../components/SmallCardView";
@@ -53,6 +53,7 @@ export default function Search({ navigation }) {
 
   const sortSelector = useSelector((state) => state.sortReducer);
   const selector = useSelector((state) => state.detailsCardReducer);
+  const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
   // Refresh Controll
@@ -85,16 +86,20 @@ export default function Search({ navigation }) {
     const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    const stateReq = await axios.get("http://madrasatic.tech/api/states", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     axios
-      .all([signalReq, categoryReq])
+      .all([signalReq, categoryReq, stateReq])
       .then(
         axios.spread((...res) => {
           const signalRes = res[0];
           const categoryRes = res[1];
+          const stateRes = res[2];
 
           // map each signal to its category
-          mapCat(signalRes.data, categoryRes.data);
+          mapCat(signalRes.data, categoryRes.data, stateRes.data);
 
           // mapReact(signalRes.data, upVoteRes.data);
 
@@ -110,7 +115,6 @@ export default function Search({ navigation }) {
               return b.created_at.localeCompare(a.created_at);
             })
           );
-          
 
           // set category data
 
@@ -135,17 +139,20 @@ export default function Search({ navigation }) {
   };
 
   // map category with signals
-  const mapCat = async (signalArr, categoryArr, reactionArr) => {
+  const mapCat = async (signalArr, categoryArr, stateArr) => {
     signalArr.forEach((e) => {
       categoryArr.map((cat) => {
         if (e.last_signalement_v_c.category_id === cat.id) {
           Object.assign(e, { cat });
         }
       });
+      stateArr.map((s) => {
+        if (e.last_signalement_v_c.state_id === s.id) {
+          Object.assign(e, { s });
+        }
+      });
     });
   };
-
-
 
   const renderItem = ({ item }) => {
     return (
@@ -153,7 +160,7 @@ export default function Search({ navigation }) {
         onPress={() => {
           navigation.getParent().navigate("Details", {
             id: item.id,
-            cat: item.cat
+            cat: item.cat,
           });
           dispatch(setItem(item));
         }}
@@ -169,7 +176,16 @@ export default function Search({ navigation }) {
   };
 
   return (
-    <View style={styles.Search}>
+    <View
+      style={[
+        styles.Search,
+        {
+          backgroundColor: themeSelector.isLight
+            ? COLORS.LIGHT
+            : COLORS.PRIMARY,
+        },
+      ]}
+    >
       <Filter
         data={data}
         setFilteredByType={setFilteredByType}
@@ -199,8 +215,21 @@ export default function Search({ navigation }) {
           }}
         >
           <TouchableWithoutFeedback>
-            <View style={styles.modalView}>
-              <Bold style={styles.modalText}>Trier par:</Bold>
+            <View
+              style={[
+                styles.modalView,
+                { backgroundColor: themeSelector.theme.LIGHT },
+              ]}
+            >
+              <Bold
+                style={{
+                  marginBottom: 15,
+                  textAlign: "center",
+                  color: themeSelector.theme.DARK,
+                }}
+              >
+                Trier par:
+              </Bold>
               <Sort />
               <View
                 style={{
@@ -210,22 +239,32 @@ export default function Search({ navigation }) {
                 }}
               >
                 <TouchableOpacity
-                  style={styles.buttonAnnuler}
+                  style={[
+                    styles.buttonAnnuler,
+                    { backgroundColor: themeSelector.theme.ACCENT },
+                  ]}
                   onPress={() => {
                     dispatch(setSortInvisible());
                     dispatch(check("datedDSC"));
                   }}
                 >
-                  <Bold style={{ color: COLORS.PRIMARY }}>ANNULER</Bold>
+                  <Bold style={{ color: themeSelector.theme.DARK }}>
+                    ANNULER
+                  </Bold>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.buttonConfirm}
+                  style={[
+                    styles.buttonConfirm,
+                    { backgroundColor: themeSelector.theme.PRIMARY },
+                  ]}
                   onPress={() => {
                     dispatch(setSortInvisible());
                   }}
                 >
-                  <Bold style={{ color: COLORS.CLOUD }}>CONFIRMER</Bold>
+                  <Bold style={{ color: themeSelector.theme.LIGHT }}>
+                    CONFIRMER
+                  </Bold>
                 </TouchableOpacity>
               </View>
             </View>
@@ -237,7 +276,7 @@ export default function Search({ navigation }) {
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <ActivityIndicator size="large" color={COLORS.PRIMARY} />
+          <ActivityIndicator size="large" color={themeSelector.theme.PRIMARY} />
         </View>
       ) : (
         <FlatList
@@ -259,8 +298,8 @@ export default function Search({ navigation }) {
       {contentVerticalOffset > CONTENT_OFFSET_THRESHOLD && (
         <FAB
           style={styles.fab}
-          color={COLORS.ACCENT}
-          icon={<ChevronUpIcon color={COLORS.PRIMARY} />}
+          color={themeSelector.theme.PRIMARY}
+          icon={<ChevronUpIcon color={themeSelector.theme.ACCENT} />}
           onPress={() => {
             listRef.current.scrollToOffset({ offset: 0, animated: true });
           }}
@@ -273,7 +312,6 @@ export default function Search({ navigation }) {
 const styles = StyleSheet.create({
   Search: {
     flex: 1,
-    backgroundColor: "white",
     paddingBottom: 80,
   },
   container: {
@@ -299,7 +337,6 @@ const styles = StyleSheet.create({
   modalView: {
     justifyContent: "space-between",
     margin: 20,
-    backgroundColor: "white",
     borderRadius: 20,
     padding: 25,
     alignItems: "center",
@@ -317,17 +354,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     elevation: 2,
-    backgroundColor: COLORS.PRIMARY,
     marginLeft: 15,
   },
   buttonAnnuler: {
     borderRadius: 10,
     padding: 10,
     elevation: 2,
-    backgroundColor: COLORS.ACCENT,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
   },
 });

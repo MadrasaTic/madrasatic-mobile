@@ -8,8 +8,10 @@ import {
   responsiveScreenWidth,
 } from "react-native-responsive-dimensions";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSelector } from "react-redux";
 
 const SmallCardView = ({ item }) => {
+  const themeSelector = useSelector((state) => state.themeReducer);
   return (
     <View style={styles.card}>
       <View style={styles.image}>
@@ -23,7 +25,7 @@ const SmallCardView = ({ item }) => {
         />
         {
           item.cat.priority.id === 1 && <View  style={styles.priority}>
-        <Small style={styles.priorityText}>{item.cat.priority.name}</Small>
+        <Small style={{color: '#FAFCFE'}}>{item.cat.priority.name}</Small>
         </View>
         }
         
@@ -39,10 +41,10 @@ const SmallCardView = ({ item }) => {
       </View>
 
       <View style={styles.content}>
-        <Body>{item.title.split(" ")[0]}</Body>
+        <Body style={{ color: themeSelector.theme.TEXT }}>{item.title.split(" ")[0]}</Body>
         <View style={styles.status}>
-          <View style={styles.statusIndicator}></View>
-          <Small style={{ color: COLORS.SUBTLE }}>
+          <View style={[styles.statusIndicator, {backgroundColor: item.s.color}]}></View>
+          <Small style={{ color: themeSelector.theme.SUBTLE }}>
             {item.last_signalement_v_c.state_id}
           </Small>
         </View>
@@ -76,7 +78,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.SUCCESS,
     marginRight: 4,
   },
   status: {
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   category: {
     margin: 5,
     bottom: 0,
-    color: COLORS.CLOUD,
+    color: '#FAFCFE',
     position: 'absolute',
   },
   priority: {
@@ -110,12 +111,9 @@ const styles = StyleSheet.create({
     left: 0,
     height: 20,
     width: '55%',
-    backgroundColor: COLORS.ERROR,
+    backgroundColor: '#F80509',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4
   },
-  priorityText: {
-    color: COLORS.CLOUD
-  }
 });

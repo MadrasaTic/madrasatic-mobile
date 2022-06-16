@@ -18,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import HomePageNavigator from "./homePageNavigator";
 import Search from "../screens/search";
+import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +27,7 @@ const Tab = createBottomTabNavigator();
 
 const LoggedInNavigator = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
-
+  const themeSelector = useSelector((state) => state.themeReducer)
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardStatus(true);
@@ -105,7 +106,7 @@ const LoggedInNavigator = ({ navigation }) => {
           component={Search}
           options={{
             headerStyle: {
-              backgroundColor: COLORS.ACCENT,
+              backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK,
               borderColor: "transparent",
             },
             headerTitleStyle: {
@@ -116,7 +117,7 @@ const LoggedInNavigator = ({ navigation }) => {
             },
             headerTitleAlign: 'center',
             headerLeft: () => null,
-            headerTintColor: COLORS.PRIMARY,
+            headerTintColor: themeSelector.isLight ? COLORS.PRIMARY : COLORS.LIGHT,
             title: "Rechercher",
             tabBarIcon: ({ focused }) => (
               <View
@@ -143,7 +144,7 @@ const LoggedInNavigator = ({ navigation }) => {
           component={Announcement}
           options={{
             headerStyle: {
-              backgroundColor: COLORS.ACCENT,
+              backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK,
 
             },
             headerTitleStyle: {
@@ -153,7 +154,7 @@ const LoggedInNavigator = ({ navigation }) => {
               alignSelf: 'center'
             },
             headerTitleAlign: 'center',
-            headerTintColor: COLORS.PRIMARY,
+            headerTintColor: themeSelector.isLight ? COLORS.PRIMARY : COLORS.LIGHT,
             title: "Annonces",
             tabBarIcon: ({ focused }) => (
               <View
@@ -180,7 +181,7 @@ const LoggedInNavigator = ({ navigation }) => {
           component={Profile}
           options={{
             headerStyle: {
-              backgroundColor: COLORS.ACCENT,
+              backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK,
 
             },
             headerTitleStyle: {
@@ -190,7 +191,7 @@ const LoggedInNavigator = ({ navigation }) => {
               alignSelf: 'center'
             },
             headerTitleAlign: 'center',
-            headerTintColor: COLORS.PRIMARY,
+            headerTintColor: themeSelector.isLight ? COLORS.PRIMARY : COLORS.LIGHT,
             title: "Mon Profile",
             tabBarIcon: ({ focused }) => (
               <View

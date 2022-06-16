@@ -17,19 +17,26 @@ PODS:
     - ExpoModulesCore
   - EXFont (10.0.5):
     - ExpoModulesCore
-  - EXImagePicker (12.0.2):
+  - EXImageLoader (3.2.0):
     - ExpoModulesCore
+    - React-Core
   - EXJSONUtils (0.2.1)
   - EXKeepAwake (10.0.2):
     - ExpoModulesCore
   - EXManifests (0.2.4):
     - EXJSONUtils
+  - EXNotifications (0.15.2):
+    - ExpoModulesCore
+  - EXPermissions (13.2.0):
+    - ExpoModulesCore
   - Expo (44.0.6):
     - ExpoModulesCore
   - ExpoAdapterGoogleSignIn (7.2.2):
     - ExpoModulesCore
     - GoogleSignIn
     - React-Core
+  - ExpoImagePicker (13.1.1):
+    - ExpoModulesCore
   - ExpoLinearGradient (11.3.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.6.5):
@@ -328,7 +335,7 @@ PODS:
     - React-cxxreact (= 0.64.3)
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
-  - RNCAsyncStorage (1.17.4):
+  - RNCAsyncStorage (1.17.6):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
@@ -379,12 +386,15 @@ DEPENDENCIES:
   - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
-  - EXImagePicker (from `../node_modules/expo-image-picker/ios`)
+  - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
+  - EXNotifications (from `../node_modules/expo-notifications/ios`)
+  - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - Expo (from `../node_modules/expo/ios`)
   - "ExpoAdapterGoogleSignIn (from `../node_modules/@react-native-google-signin/google-signin/ios`)"
+  - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
   - EXRandom (from `../node_modules/expo-random/ios`)
@@ -453,18 +463,24 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-file-system/ios"
   EXFont:
     :path: "../node_modules/expo-font/ios"
-  EXImagePicker:
-    :path: "../node_modules/expo-image-picker/ios"
+  EXImageLoader:
+    :path: "../node_modules/expo-image-loader/ios"
   EXJSONUtils:
     :path: "../node_modules/expo-json-utils/ios"
   EXKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   EXManifests:
     :path: "../node_modules/expo-manifests/ios"
+  EXNotifications:
+    :path: "../node_modules/expo-notifications/ios"
+  EXPermissions:
+    :path: "../node_modules/expo-permissions/ios"
   Expo:
     :path: "../node_modules/expo/ios"
   ExpoAdapterGoogleSignIn:
     :path: "../node_modules/@react-native-google-signin/google-signin/ios"
+  ExpoImagePicker:
+    :path: "../node_modules/expo-image-picker/ios"
   ExpoLinearGradient:
     :path: "../node_modules/expo-linear-gradient/ios"
   ExpoModulesCore:
@@ -563,12 +579,15 @@ SPEC CHECKSUMS:
   EXErrorRecovery: b0d7582714a2cc896e94a2308a356f94dbf14ef7
   EXFileSystem: 08a3033ac372b6346becf07839e1ccef26fb1058
   EXFont: 2597c10ac85a69d348d44d7873eccf5a7576ef5e
-  EXImagePicker: bf4d62532cc2bf217edbe4abbb0014e73e079eac
+  EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXJSONUtils: 5ee0d5cf76da70ad86f0be1a41cc70f47d69e06f
   EXKeepAwake: bf48d7f740a5cd2befed6cf9a49911d385c6c47d
   EXManifests: d3464cd2278f4a19cd80c1aa673231570b534c11
+  EXNotifications: ea9fc56d27d1fee229489c5d8f452c7f367c237e
+  EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 534e51e607aba8229293297da5585f4b26f50fa1
   ExpoAdapterGoogleSignIn: 385ea557c00b1feb07f1816e6cf1563e63cfe9c1
+  ExpoImagePicker: d9d6b4f29db437fc7796f13cee5f133f5b4b5f7c
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoModulesCore: 32c0ccb47f477d330ee93db72505380adf0de09a
   EXRandom: 1d00fd04d7d874c0c9d1ff87cee59ffe0b638a3d
@@ -608,7 +627,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
-  RNCAsyncStorage: 9367a646dc24e3ab7b6874d79bc1bfd0832dce58
+  RNCAsyncStorage: 466b9df1a14bccda91da86e0b7d9a345d78e1673
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNGestureHandler: e1099204721a17a89c81fcd1cc2e92143dc040fb
   RNGoogleSignin: d7f8368b82d94f1dec964785d496387ca7f19092

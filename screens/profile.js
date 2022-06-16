@@ -1,5 +1,11 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Image, Switch } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Switch,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import H3 from "../components/typography/h3";
 import Body from "../components/typography/body";
@@ -7,10 +13,13 @@ import Bold from "../components/typography/bold";
 import COLORS from "../constants/colors";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoggedOut } from "../redux/actions";
+import { setDarkTheme, setLightTheme, setLoggedOut } from "../redux/actions";
 import * as SecureStore from "expo-secure-store";
+import { responsiveScreenWidth } from "react-native-responsive-dimensions";
+import { LogoutIcon } from "react-native-heroicons/solid";
 
 const toggleToDarkImage = "../assets/images/toggleToDark.png";
+const toggleToLightImage = "../assets/images/lightToggle.png";
 const signOutImage = "../assets/images/signOut.png";
 
 // This screen is responsible for the "My Profile" page, it contains user data and allows the user
@@ -18,6 +27,7 @@ const signOutImage = "../assets/images/signOut.png";
 
 const Profile = ({ navigation }) => {
   const selector = useSelector((state) => state.userReducer);
+  const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
   const signOut = () => {
@@ -29,17 +39,41 @@ const Profile = ({ navigation }) => {
   const [isEnabledAnnonces, setIsEnabledAnnonces] = useState(false);
   const [isEnabledSignalements, setIsEnabledSignalements] = useState(false);
   return (
-    <View style={styles.screen}>
+    <View
+      style={[
+        styles.screen,
+        {
+          backgroundColor: themeSelector.isLight
+            ? COLORS.LIGHT
+            : COLORS.PRIMARY,
+        },
+      ]}
+    >
+      <StatusBar
+        backgroundColor={COLORS.IRIS_10}
+        barStyle={themeSelector.statusbarStyle}
+      />
+
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <H3 style={styles.headerTitle}>Mon Profile</H3>
-          <Pressable style={styles.toggleToDarkPressable}>
+          <TouchableOpacity
+            style={styles.toggleToDarkPressable}
+            onPress={() => {
+              themeSelector.isLight
+                ? dispatch(setDarkTheme())
+                : dispatch(setLightTheme());
+            }}
+          >
             <Image
-              source={require(toggleToDarkImage)}
+              source={
+                themeSelector.isLight
+                  ? require(toggleToDarkImage)
+                  : require(toggleToLightImage)
+              }
               style={styles.toggleToDark}
             ></Image>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         {/*User info*/}
         <View style={styles.profile}>
@@ -50,18 +84,32 @@ const Profile = ({ navigation }) => {
             ></Image>
           </Pressable>
           <View style={styles.info}>
-            <Body style={styles.name}>{selector.name}</Body>
-            <Body style={styles.email}>{selector.email}</Body>
+            <Body style={{ color: themeSelector.theme.TEXT }}>
+              {selector.name}
+            </Body>
+            <Body style={{ color: themeSelector.theme.SUBTLE }}>
+              {selector.email}
+            </Body>
           </View>
         </View>
         {/*Notifications*/}
         <View style={styles.notificationSettings}>
-          <Body style={styles.notificationTitle}>Notifications</Body>
+          <Bold
+            style={{
+              flex: 1,
+              color: themeSelector.isLight ? COLORS.SUBTLE : COLORS.CLOUD,
+            }}
+          >
+            Notifications
+          </Bold>
           <View style={styles.setting}>
-            <Body style={styles.settingTitle}>Annonces</Body>
+            <Body style={{ color: themeSelector.theme.PRIMARY }}>Annonces</Body>
             <Switch
-              trackColor={{ false: "#767577", true: COLORS.SUCCESS }}
-              thumbColor={isEnabledAnnonces ? "#FFF" : "#f4f3f4"}
+              trackColor={{
+                false: "#767577",
+                true: themeSelector.theme.SUCCESS,
+              }}
+              thumbColor={isEnabledAnnonces ? COLORS.LIGHT : "#f4f3f4"}
               value={isEnabledAnnonces}
               onChange={() =>
                 setIsEnabledAnnonces((previousState) => !previousState)
@@ -70,10 +118,15 @@ const Profile = ({ navigation }) => {
             />
           </View>
           <View style={styles.setting}>
-            <Body style={styles.settingTitle}>Signalements</Body>
+            <Body style={{ color: themeSelector.theme.PRIMARY }}>
+              Signalements
+            </Body>
             <Switch
-              trackColor={{ false: "#767577", true: COLORS.SUCCESS }}
-              thumbColor={isEnabledSignalements ? "#FFF" : "#f4f3f4"}
+              trackColor={{
+                false: "#767577",
+                true: themeSelector.theme.SUCCESS,
+              }}
+              thumbColor={isEnabledSignalements ? COLORS.LIGHT : "#f4f3f4"}
               value={isEnabledSignalements}
               onChange={() =>
                 setIsEnabledSignalements((previousState) => !previousState)
@@ -83,20 +136,29 @@ const Profile = ({ navigation }) => {
           </View>
         </View>
         {/*Horizontal rule*/}
-        <View style={styles.horizontalRule}></View>
+        <View
+          style={[
+            styles.horizontalRule,
+            { color: themeSelector.theme.PRIMARY },
+          ]}
+        ></View>
         {/*Sign out*/}
         <View style={styles.signOut}>
-          <Pressable style={styles.signOutPressable} onPress={() => signOut()}>
+          <TouchableOpacity
+            style={[
+              styles.signOutPressable,
+              { color: themeSelector.theme.PRIMARY },
+            ]}
+            onPress={() => signOut()}
+          >
             <View style={styles.imageView}>
-              <Image
-                source={require(signOutImage)}
-                style={styles.signOutImage}
-              ></Image>
+              <LogoutIcon color={themeSelector.theme.PRIMARY} />
             </View>
-            <Bold style={styles.signOutText}>Se déconnecter</Bold>
-          </Pressable>
+            <Bold style={{ flex: 10, color: themeSelector.theme.PRIMARY }}>
+              Se déconnecter
+            </Bold>
+          </TouchableOpacity>
         </View>
-        <StatusBar style="auto" />
       </View>
     </View>
   );
@@ -105,28 +167,22 @@ const Profile = ({ navigation }) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#FFF",
   },
   container: {
     flex: 1,
-    margin: 50,
+    margin: 40,
     flexDirection: "column",
   },
   header: {
-    flex: 1,
-    marginHorizontal: 80,
-    flexDirection: "row",
+    alignItems: "flex-end",
+    marginBottom: 25,
   },
   toggleToDarkPressable: {
     paddingVertical: 2,
-    marginLeft: 50,
   },
   toggleToDark: {
     width: 32,
     height: 32,
-  },
-  name: {
-    color: COLORS.TEXT,
   },
   profile: {
     flexDirection: "row",
@@ -140,9 +196,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flex: 3,
   },
-  email: {
-    color: COLORS.SUBTLE,
-  },
   profilePic: {
     width: 58,
     height: 58,
@@ -152,21 +205,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
-  notificationTitle: {
-    color: COLORS.SUBTLE,
-    flex: 1,
-  },
   setting: {
     flexDirection: "row",
     flex: 1,
     paddingVertical: 5,
     justifyContent: "space-between",
-  },
-  settingTitle: {
-    flex: 2,
-  },
-  switch: {
-    flex: 1,
   },
   horizontalRule: {
     borderBottomWidth: 1,
@@ -180,17 +223,8 @@ const styles = StyleSheet.create({
   signOutPressable: {
     flexDirection: "row",
   },
-  signOutImage: {
-    width: 20,
-    height: 19,
-    marginTop: 3.5,
-  },
   imageView: {
     flex: 1,
-  },
-  signOutText: {
-    flex: 10,
-    color: COLORS.PRIMARY,
   },
 });
 

@@ -27,6 +27,7 @@ const prefix = Linking.createURL("user_token/{token}");
 
 const image = "../assets/images/background.png";
 const googleIcon = "../assets/images/google.png";
+const logo = "../assets/images/madrassaTic-01.png";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -68,6 +69,7 @@ const Login = ({ navigation }) => {
       style={styles.image}
       resizeMode="cover"
     >
+      <Image source={require(logo)} style={{height: 50, width: 250, marginBottom: 70, marginLeft: 40}}/>
       <View style={styles.content}>
         <H3 style={styles.title}>Bienvenue à MadrasaTic !</H3>
         <Body style={styles.description}>

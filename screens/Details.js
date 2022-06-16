@@ -32,6 +32,7 @@ import { setItem } from "../redux/actions";
 
 const Details = ({ route, navigation }) => {
   const selector = useSelector((state) => state.itemReducer);
+  const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
   const { id, cat } = route.params;
@@ -52,20 +53,34 @@ const Details = ({ route, navigation }) => {
   const fetchItem = async (id) => {
     setIsLoading(true);
     const token = await SecureStore.getItemAsync("token");
-    axios
-      .get(`http://madrasatic.tech/api/signalement/${id}`, {
+
+    const signalReq = await axios.get(
+      `http://madrasatic.tech/api/signalement/${id}`,
+      {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        dispatch(setItem(res.data));
-        setUpCount(res.data.up_votes);
-        setDownCount(res.data.down_votes);
-        setUpVoted(res.data.isReacted === "up" ? true : false);
-        setDownVoted(res.data.isReacted === "down" ? true : false);
-        setSaved(res.data.isSaved);
-        console.log(selector.item);
-        setIsLoading(false);
-      })
+      }
+    );
+    const stateReq = await axios.get("http://madrasatic.tech/api/states", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    axios
+      .all([signalReq, stateReq])
+      .then(
+        axios.spread((...res) => {
+          const signalRes = res[0];
+          const stateRes = res[1];
+
+          mapState(signalRes.data, stateRes.data);
+          dispatch(setItem(signalRes.data));
+          setUpCount(signalRes.data.up_votes);
+          setDownCount(signalRes.data.down_votes);
+          setUpVoted(signalRes.data.isReacted === "up" ? true : false);
+          setDownVoted(signalRes.data.isReacted === "down" ? true : false);
+          setSaved(signalRes.data.isSaved);
+          console.log(selector.item);
+          setIsLoading(false);
+        })
+      )
       .catch((error) => {
         if (error.response) {
           // Request made and server responded
@@ -80,6 +95,14 @@ const Details = ({ route, navigation }) => {
           console.log("Error", error.message);
         }
       });
+  };
+
+  const mapState = async (e, stateArr) => {
+    stateArr.map((s) => {
+      if (e.last_signalement_v_c.state_id === s.id) {
+        Object.assign(e, { s });
+      }
+    });
   };
 
   // User reaction
@@ -119,206 +142,297 @@ const Details = ({ route, navigation }) => {
   };
 
   return (
-    // <View>
-    //   {/* Header */}
-    //   <View style={styles.header}>
-    //     <View style={styles.headerContent}>
-    //       <TouchableOpacity
-    //         style={styles.headerPressable}
-    //         onPress={() => navigation.goBack()}
-    //       >
-    //         <ArrowLeftIcon color={COLORS.PRIMARY} />
-    //       </TouchableOpacity>
-    //       <H3 style={styles.headerText}>Détails</H3>
-    //     </View>
-    //   </View>
-    // </View>
     <>
       {isLoading ? (
-        <View style={{ flex: 1, justifyContent: "center" }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            backgroundColor: themeSelector.theme.ACCENT,
+          }}
+        >
           <ActivityIndicator size="large" color={COLORS.PRIMARY} />
         </View>
-      ) : selector.item &&  <ScrollView
-      scrollEnabled={true}
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.IRIS_10,
-        alignContent: "center",
-      }}
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.headerPressable}
-            onPress={() => navigation.goBack()}
-          >
-            <ArrowLeftIcon color={COLORS.PRIMARY} />
-          </TouchableOpacity>
-          <H3 style={styles.headerText}>Détails</H3>
-        </View>
-      </View>
-
-      {/* card infos */}
-      <View style={styles.cardContainer}>
-        <Image
-          source={{
-            uri:
-              "http://madrasatic.tech/storage/" +
-              selector.item.last_signalement_v_c.attachement,
-          }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.cardContent}>
-          <Bold style={styles.title}>
-            {capitalize(selector.item.title)}
-          </Bold>
-
-          {/* FIXME: if Annonce ne pas afficher etat */}
-          <View style={styles.status}>
-            <View style={styles.statusIndicator}></View>
-            <Small style={{ color: COLORS.SUBTLE }}>
-              {selector.item.last_signalement_v_c.state_id}
-            </Small>
-          </View>
-
-          <Small style={{ color: COLORS.SUBTLE }}>{cat.name}</Small>
-        </View>
-      </View>
-
-      {/* TODO: reactions */}
-      <View
-        style={[
-          styles.reactions,
-          { marginHorizontal: 15, justifyContent: "space-around" },
-        ]}
-      >
-        <View
-          style={[
-            styles.reactions,
-            { width: 200, justifyContent: "space-between" },
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={() => {
-              react(selector.item.id, "up");
-              setUpVoted(!upVoted);
-
-              if (!upVoted) {
-                setUpCount(upCount + 1);
-                console.log(upCount);
-                if (downCount > 0) setDownCount(downCount - 1);
-              } else {
-                if (upCount > 0) setUpCount(upCount - 1);
-              }
-              setDownVoted(false);
+      ) : (
+        selector.item && (
+          <ScrollView
+            scrollEnabled={true}
+            style={{
+              flex: 1,
+              backgroundColor: themeSelector.isLight
+                ? COLORS.IRIS_10
+                : COLORS.PRIMARY,
+              alignContent: "center",
             }}
           >
-            <ThumbUpIcon color={upVoted ? COLORS.PRIMARY : COLORS.SUBTLE} />
-            <Body style={{ color: COLORS.DARK }}>Up votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{upCount}</Small>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={() => {
-              react(selector.item.id, "down");
-              setDownVoted(!downVoted);
-
-              if (!downVoted) {
-                if (upCount > 0) setUpCount(upCount - 1);
-                setDownCount(downCount + 1);
-              } else {
-                if (downCount > 0) setDownCount(downCount - 1);
-              }
-              setUpVoted(false);
-            }}
-          >
-            <ThumbDownIcon
-              color={downVoted ? COLORS.PRIMARY : COLORS.SUBTLE}
-            />
-            <Body style={{ color: COLORS.DARK }}>Down votes</Body>
-            <Small style={{ color: COLORS.SUBTLE }}>{downCount}</Small>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={styles.pressable}
-          onPress={() => {
-            bookMark(selector.item.id);
-            setSaved(!saved);
-          }}
-        >
-          <BookmarkIcon color={saved ? COLORS.PRIMARY : COLORS.SUBTLE} />
-          <Body style={{ color: COLORS.DARK }}>Enregistrer</Body>
-        </TouchableOpacity>
-      </View>
-
-      {/* TODO: Details */}
-      <View style={styles.details}>
-        <Body style={styles.description}>
-          {capitalize(selector.item.description)}
-        </Body>
-
-        <View style={styles.grid}>
-          <View style={styles.column}>
-            <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>Ajouté le:</Body>
-              <Small style={{ color: COLORS.SUBTLE }}>
-                {selector.item.updated_at.split(".")[0].split("T")[0]}
-              </Small>
+            {/* Header */}
+            <View
+              style={[
+                styles.header,
+                {
+                  backgroundColor: themeSelector.isLight
+                    ? COLORS.ACCENT
+                    : COLORS.DARK,
+                },
+              ]}
+            >
+              <View style={styles.headerContent}>
+                <TouchableOpacity
+                  style={styles.headerPressable}
+                  onPress={() => navigation.goBack()}
+                >
+                  <ArrowLeftIcon color={themeSelector.theme.PRIMARY} />
+                </TouchableOpacity>
+                <H3
+                  style={{
+                    right: responsiveScreenWidth(35),
+                    color: themeSelector.theme.PRIMARY,
+                  }}
+                >
+                  Détails
+                </H3>
+              </View>
             </View>
 
-            <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>Par: </Body>
-              <Small style={{ color: COLORS.SUBTLE }}>
-                {selector.item.creator.name}
-              </Small>
+            {/* card infos */}
+            <View style={styles.cardContainer}>
+              <Image
+                source={{
+                  uri:
+                    "http://madrasatic.tech/storage/" +
+                    selector.item.last_signalement_v_c.attachement,
+                }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+              <View style={styles.cardContent}>
+                <Bold
+                  style={{
+                    flexWrap: "wrap",
+                    width: responsiveScreenWidth(90) / 2,
+                    color: themeSelector.theme.DARK,
+                  }}
+                >
+                  {capitalize(selector.item.title)}
+                </Bold>
+
+                {/* FIXME: if Annonce ne pas afficher etat */}
+                <View style={styles.status}>
+                  <View
+                    style={[
+                      styles.statusIndicator,
+                      { backgroundColor: selector.item.s.color },
+                    ]}
+                  ></View>
+                  <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                    {selector.item.last_signalement_v_c.state_id}
+                  </Small>
+                </View>
+
+                <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                  {cat.name}
+                </Small>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.column}>
-            <View style={styles.info}>
-              <Body style={{ color: COLORS.TEXT }}>A: </Body>
-              <Small style={{ color: COLORS.SUBTLE }}>
-                {selector.item.updated_at.split(".")[0].split("T")[1]}
-              </Small>
+            {/* TODO: reactions */}
+            <View
+              style={[
+                styles.reactions,
+                { marginHorizontal: 15, justifyContent: "space-around" },
+              ]}
+            >
+              <View
+                style={[
+                  styles.reactions,
+                  { width: 200, justifyContent: "space-between" },
+                ]}
+              >
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={() => {
+                    react(selector.item.id, "up");
+                    setUpVoted(!upVoted);
+
+                    if (!upVoted) {
+                      setUpCount(upCount + 1);
+                      console.log(upCount);
+                      if (downCount > 0 && downVoted)
+                        setDownCount(downCount - 1);
+                    } else {
+                      if (upCount > 0) setUpCount(upCount - 1);
+                    }
+                    setDownVoted(false);
+                  }}
+                >
+                  <ThumbUpIcon
+                    color={
+                      upVoted
+                        ? themeSelector.isLight
+                          ? COLORS.PRIMARY
+                          : COLORS.LIGHT
+                        : themeSelector.isLight
+                        ? COLORS.SUBTLE
+                        : COLORS.DARK
+                    }
+                  />
+                  <Body
+                    style={{
+                      color: themeSelector.isLight ? COLORS.DARK : COLORS.LIGHT,
+                    }}
+                  >
+                    Up votes
+                  </Body>
+                  <Small style={{ color: themeSelector.theme.TEXT }}>
+                    {upCount}
+                  </Small>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={() => {
+                    react(selector.item.id, "down");
+                    setDownVoted(!downVoted);
+
+                    if (!downVoted) {
+                      if (upCount > 0 && upVoted) setUpCount(upCount - 1);
+                      setDownCount(downCount + 1);
+                    } else {
+                      if (downCount > 0) setDownCount(downCount - 1);
+                    }
+                    setUpVoted(false);
+                  }}
+                >
+                  <ThumbDownIcon
+                    color={
+                      downVoted
+                        ? themeSelector.isLight
+                          ? COLORS.PRIMARY
+                          : COLORS.LIGHT
+                        : themeSelector.isLight
+                        ? COLORS.SUBTLE
+                        : COLORS.DARK
+                    }
+                  />
+                  <Body
+                    style={{
+                      color: themeSelector.isLight ? COLORS.DARK : COLORS.LIGHT,
+                    }}
+                  >
+                    Down votes
+                  </Body>
+                  <Small style={{ color: themeSelector.theme.TEXT }}>
+                    {downCount}
+                  </Small>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={styles.pressable}
+                onPress={() => {
+                  bookMark(selector.item.id);
+                  setSaved(!saved);
+                }}
+              >
+                <BookmarkIcon
+                  color={
+                    saved
+                      ? themeSelector.isLight
+                        ? COLORS.PRIMARY
+                        : COLORS.LIGHT
+                      : themeSelector.isLight
+                      ? COLORS.SUBTLE
+                      : COLORS.DARK
+                  }
+                />
+                <Body
+                  style={{
+                    color: themeSelector.isLight ? COLORS.DARK : COLORS.LIGHT,
+                  }}
+                >
+                  Enregistrer
+                </Body>
+              </TouchableOpacity>
             </View>
-          </View>
-        </View>
 
-        {/* infrastructure */}
-        <View style={styles.info}>
-          <Body style={{ color: COLORS.TEXT }}>Lieu: </Body>
-          <Small style={{ color: COLORS.SUBTLE }}>
-            {selector.item.annexe &&
-            selector.item.bloc &&
-            selector.item.room
-              ? selector.item.annexe.name +
-                " > " +
-                selector.item.bloc.name +
-                " > " +
-                selector.item.room.type +
-                " " +
-                selector.item.room.name
-              : selector.item.annexe &&
-                selector.item.bloc &&
-                !selector.item.room
-              ? selector.item.annexe.name + " > " + selector.item.bloc.name
-              : selector.item.annexe &&
-                !selector.item.bloc &&
-                !selector.item.room
-              ? selector.item.annexe.name
-              : "?"}
-          </Small>
-        </View>
-      </View>
+            {/* TODO: Details */}
+            <View
+              style={[
+                styles.details,
+                { backgroundColor: themeSelector.theme.LIGHT },
+              ]}
+            >
+              <Body
+                style={{ color: themeSelector.theme.TEXT, marginBottom: 20 }}
+              >
+                {capitalize(selector.item.description)}
+              </Body>
 
-      {/* TODO: Signalements rattachés */}
-      <View></View>
-    </ScrollView>}
+              <View style={styles.grid}>
+                <View style={styles.column}>
+                  <View style={styles.info}>
+                    <Body style={{ color: themeSelector.theme.TEXT }}>
+                      Ajouté le:
+                    </Body>
+                    <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                      {selector.item.updated_at.split(".")[0].split("T")[0]}
+                    </Small>
+                  </View>
+
+                  <View style={styles.info}>
+                    <Body style={{ color: themeSelector.theme.TEXT }}>
+                      Par:{" "}
+                    </Body>
+                    <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                      {selector.item.creator.name}
+                    </Small>
+                  </View>
+                </View>
+
+                <View style={styles.column}>
+                  <View style={styles.info}>
+                    <Body style={{ color: themeSelector.theme.TEXT }}>A: </Body>
+                    <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                      {selector.item.updated_at.split(".")[0].split("T")[1]}
+                    </Small>
+                  </View>
+                </View>
+              </View>
+
+              {/* infrastructure */}
+              <View style={styles.info}>
+                <Body style={{ color: themeSelector.theme.TEXT }}>Lieu: </Body>
+                <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                  {selector.item.annexe &&
+                  selector.item.bloc &&
+                  selector.item.room
+                    ? selector.item.annexe.name +
+                      " > " +
+                      selector.item.bloc.name +
+                      " > " +
+                      selector.item.room.type +
+                      " " +
+                      selector.item.room.name
+                    : selector.item.annexe &&
+                      selector.item.bloc &&
+                      !selector.item.room
+                    ? selector.item.annexe.name +
+                      " > " +
+                      selector.item.bloc.name
+                    : selector.item.annexe &&
+                      !selector.item.bloc &&
+                      !selector.item.room
+                    ? selector.item.annexe.name
+                    : "?"}
+                </Small>
+              </View>
+            </View>
+
+            {/* TODO: Signalements rattachés */}
+            <View></View>
+          </ScrollView>
+        )
+      )}
     </>
   );
 };
@@ -340,10 +454,6 @@ const styles = StyleSheet.create({
     height: responsiveScreenHeight(60) / 3,
     backgroundColor: "transparent",
   },
-  title: {
-    flexWrap: "wrap",
-    width: responsiveScreenWidth(90) / 2,
-  },
   cardContent: {
     justifyContent: "flex-end",
     marginBottom: 35,
@@ -352,7 +462,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.SUCCESS,
     marginRight: 4,
   },
   status: {
@@ -401,21 +510,16 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   header: {
-    backgroundColor: COLORS.ACCENT,
     height: 100,
     paddingBottom: 10,
   },
   headerContent: {
-    paddingTop: 75,
+    paddingTop: 65,
     paddingHorizontal: 25,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   headerPressable: {
     paddingTop: 5,
-  },
-  headerText: {
-    color: COLORS.PRIMARY,
-    right: responsiveScreenWidth(35),
   },
 });

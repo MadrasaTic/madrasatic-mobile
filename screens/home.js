@@ -17,6 +17,8 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { setItem } from "../redux/actions";
+import { FAB } from "react-native-elements";
+import { PlusIcon } from "react-native-heroicons/solid";
 
 const likeImage = require("../assets/images/like.png");
 const dislikeImage = require("../assets/images/dislike.png");
@@ -27,24 +29,7 @@ export default function Home({ navigation }) {
   const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
-
-  // const fetchData = async () => {
-  //   const token = await SecureStore.getItemAsync("token");
-  //   axios({
-  //     method: "get",
-  //     url: "http://madrasatic.tech/api/signalement",
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then((res) => {
-  //       setData(res.data);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+  const themeSelector = useSelector((state) => state.themeReducer);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -59,27 +44,25 @@ export default function Home({ navigation }) {
     const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    const stateReq = await axios.get("http://madrasatic.tech/api/states", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     axios
-      .all([signalReq, categoryReq])
+      .all([signalReq, categoryReq, stateReq])
       .then(
         axios.spread((...res) => {
           const signalRes = res[0];
           const categoryRes = res[1];
+          const stateRes = res[2];
 
           // map each signal to its category
-          mapCat(signalRes.data, categoryRes.data);
+          mapCat(signalRes.data, categoryRes.data, stateRes.data);
 
           // set signals data
 
-          setData(
-            signalRes.data.sort((a, b) => {
-              return b.updated_at.localeCompare(a.updated_at);
-            })
-          );
-
+          setData(signalRes.data);
           // set category data
-
           setCategory(categoryRes.data);
           setIsLoading(false);
         })
@@ -101,11 +84,16 @@ export default function Home({ navigation }) {
   };
 
   // map category with signals
-  const mapCat = async (signalArr, categoryArr) => {
+  const mapCat = async (signalArr, categoryArr, stateArr) => {
     signalArr.forEach((e) => {
       categoryArr.map((cat) => {
         if (e.last_signalement_v_c.category_id === cat.id) {
           Object.assign(e, { cat });
+        }
+      });
+      stateArr.map((s) => {
+        if (e.last_signalement_v_c.state_id === s.id) {
+          Object.assign(e, { s });
         }
       });
     });
@@ -115,22 +103,26 @@ export default function Home({ navigation }) {
     fetchData();
   }, []);
 
-  const SuccessState = () => {
+  const SuccessState = ({ state }) => {
     return (
       <View style={styles.stateBackground}>
         <View style={styles.stateInner}>
-          <View style={styles.successCircle} />
+          <View
+            style={[styles.successCircle, { backgroundColor: state.color }]}
+          />
           <Small style={styles.stateText}>Traîté</Small>
         </View>
       </View>
     );
   };
 
-  const PendingState = () => {
+  const PendingState = ({ state }) => {
     return (
       <View style={styles.stateBackground}>
         <View style={styles.stateInner}>
-          <View style={styles.pendingCircle} />
+          <View
+            style={[styles.pendingCircle, { backgroundColor: state.color }]}
+          />
           <Small style={styles.stateText}>En cours de traitement</Small>
         </View>
       </View>
@@ -139,10 +131,24 @@ export default function Home({ navigation }) {
 
   const Signalement = ({ item }) => {
     return (
-      <Card containerStyle={styles.Card} wrapperStyle={styles.inCard}>
+      <Card
+        containerStyle={[
+          styles.Card,
+          {
+            backgroundColor: themeSelector.isLight ? COLORS.LIGHT : COLORS.DARK,
+          },
+        ]}
+        wrapperStyle={styles.inCard}
+      >
         <View style={styles.signalHeader}>
-          <Small style={styles.Category}>{item.cat.name}</Small>
-          {item.published == 1 ? <SuccessState /> : <PendingState />}
+          <Small style={{ color: themeSelector.theme.SUBTLE }}>
+            {item.cat.name}
+          </Small>
+          {item.published == 1 ? (
+            <SuccessState state={item.s} />
+          ) : (
+            <PendingState state={item.s} />
+          )}
         </View>
         <Image
           style={styles.Image}
@@ -152,8 +158,8 @@ export default function Home({ navigation }) {
               item.last_signalement_v_c.attachement,
           }}
         />
-        <Bold>{item.title}</Bold>
-        <Body style={styles.Description}>
+        <Bold style={{color: themeSelector.theme.TEXT}}>{item.title}</Bold>
+        <Body style={{color: themeSelector.theme.SUBTLE}}>
           {item.description.length < 100
             ? item.description
             : item.description.slice(0, 100) + "..."}
@@ -185,7 +191,16 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView
+      style={[
+        styles.Container,
+        {
+          backgroundColor: themeSelector.isLight
+            ? COLORS.LIGHT
+            : COLORS.PRIMARY,
+        },
+      ]}
+    >
       <FlatList
         data={data}
         renderItem={({ item }) => <Signalement item={item} />}
@@ -193,12 +208,14 @@ export default function Home({ navigation }) {
         onRefresh={() => fetchData()}
         refreshing={isLoading}
       />
-      <TouchableOpacity
+      <FAB
         style={styles.addButton}
-        onPress={() => navigation.navigate("Ajouter")}
-      >
-        <Image source={plusImage} style={styles.plusImage} />
-      </TouchableOpacity>
+        color={themeSelector.theme.PRIMARY}
+        icon={<PlusIcon color={themeSelector.theme.ACCENT} />}
+        onPress={() => {
+          navigation.navigate("Ajouter");
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -233,26 +250,22 @@ const styles = StyleSheet.create({
   Description: {
     color: COLORS.TEXT,
   },
-  Category: {
-    color: COLORS.SUBTLE,
-  },
   stateBackground: {
     backgroundColor: COLORS.IRIS_10,
     borderRadius: 27,
+    justifyContent: "center",
+    alignItems: "center",
   },
   successCircle: {
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: COLORS.SUCCESS,
-    marginTop: 6.4,
   },
   pendingCircle: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: COLORS.ERROR,
-    marginTop: 6.4,
   },
   stateText: {
     color: COLORS.SUBTLE,
@@ -261,6 +274,8 @@ const styles = StyleSheet.create({
   stateInner: {
     flexDirection: "row",
     paddingHorizontal: 4,
+    paddingVertical: 3,
+    alignItems: "center",
   },
   interactiveView: {
     flexDirection: "row",

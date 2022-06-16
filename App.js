@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import { useState, React, useEffect } from "react";
 import { Text, View, ActivityIndicator } from "react-native";
 import {
   useFonts,
@@ -13,7 +13,8 @@ import CheckLoad from "./screens/checkLoad";
 import LoggedInNavigator from "./components/loggedInNavigator";
 import Details from "./screens/Details";
 import { Provider } from "react-redux";
-import {Store, persistor} from "./redux/store";
+import { Store, persistor } from "./redux/store";
+import * as Notifications from "expo-notifications";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,30 @@ export default function App() {
     WorkSans_700Bold,
     WorkSans_500Medium,
   });
+
+  useEffect(() => {
+    registerForPushNotifications();
+    Notifications.addNotificationReceivedListener(notification => console.log(notification));
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+    return () => {};
+  }, []);
+
+  const registerForPushNotifications = async () => {
+    try {
+      const permission = await Notifications.getPermissionsAsync();
+      if (!permission.granted) return;
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+    } catch (error) {
+      console.log("Error getting a token", error);
+    }
+  };
 
   if (!fontsLoaded) {
     return (
@@ -34,16 +59,16 @@ export default function App() {
       <>
         <NavigationContainer>
           <Provider store={Store}>
-              <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="CheckLoad" component={CheckLoad} />
-                <Stack.Screen name="IntroSlider" component={IntroSlider} />
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen
-                  name="LoggedInNavigator"
-                  component={LoggedInNavigator}
-                />
-                <Stack.Screen name="Details" component={Details} />
-              </Stack.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="CheckLoad" component={CheckLoad} />
+              <Stack.Screen name="IntroSlider" component={IntroSlider} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen
+                name="LoggedInNavigator"
+                component={LoggedInNavigator}
+              />
+              <Stack.Screen name="Details" component={Details} />
+            </Stack.Navigator>
           </Provider>
         </NavigationContainer>
       </>
