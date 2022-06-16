@@ -89,7 +89,9 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
 
   return (
     <View
-      style={{ backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK }}
+      style={{
+        backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK,
+      }}
     >
       <View
         style={{
@@ -109,6 +111,10 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
             height: 50,
             marginTop: 10,
             width: responsiveScreenWidth(90),
+          }}
+          inputStyle={{
+            color: themeSelector.theme.TEXT,
+            fontFamily: "WorkSans_500Medium",
           }}
           onChangeText={(value) => {
             setSearch(value);

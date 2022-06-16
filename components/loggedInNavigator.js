@@ -138,6 +138,7 @@ const LoggedInNavigator = ({ navigation }) => {
           })}
         />
 
+
         {/*Annonces*/}
         <Tab.Screen
           name="Announcement"
@@ -175,6 +176,7 @@ const LoggedInNavigator = ({ navigation }) => {
           })}
         />
 
+
         {/*Profile*/}
         <Tab.Screen
           name="Profile"
@@ -208,7 +210,7 @@ const LoggedInNavigator = ({ navigation }) => {
           }}
           listeners={({ navigation, route }) => ({
             // on press
-            tabPress: () => (offset.value = getPos() * 7),
+            tabPress: () => (offset.value = getPos() * 6.95),
           })}
         />
       </Tab.Navigator>

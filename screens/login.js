@@ -44,6 +44,7 @@ const Login = ({ navigation }) => {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((res) => {
+            console.log(res.data);
             dispatch(setLoggedIn());
             dispatch(setUserName(res.data.name));
             dispatch(setUserEmail(res.data.email));

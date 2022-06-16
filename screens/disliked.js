@@ -8,9 +8,10 @@ import COLORS from '../constants/colors';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { useDispatch } from 'react-redux';
 
-const likeImage = require('../assets/images/like.png');
-const dislikeImage = require('../assets/images/dislike.png');
+
+
 
 
 /* Need user API to find IDs of disliked signals */
@@ -19,6 +20,7 @@ export default function Disliked({ navigation }) {
   const [data, setData] = useState([]);
   const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -132,22 +134,24 @@ export default function Disliked({ navigation }) {
         </Body>
         <View style={styles.interactiveView}>
           <View style={styles.likeDislikeView}>
-            <Pressable>
-              <Image style={styles.likeDislikeImage} source={likeImage} />
+            { /*<Pressable onPress={() => {reactToPost(item.id, "up")}}>
+              <Image style={styles.likeDislikeImage} source={likedImage} /> 
             </Pressable>
-            <Pressable>
-              <Image style={styles.likeDislikeImage} source={dislikeImage} />
-            </Pressable>
-          </View>
+            <Pressable onPress={() => {reactToPost(item.id, "down")}}>
+          <Image style={styles.likeDislikeImage} source={dislikeImage} /> 
+            </Pressable>*/}
+          </View> 
           <Pressable
             style={styles.detailButton}
             onPress={() => {
-              navigation.navigate("Details", {
-                item: item,
+              navigation.getParent().navigate("Details", {
+                id: item.id,
+                cat: item.cat,
               });
+              dispatch(setItem(item));
             }}
           >
-            <Bold style={styles.buttonText}>Detail</Bold>
+            <Bold style={styles.buttonText}>Détails</Bold>
           </Pressable>
         </View>
       </Card>

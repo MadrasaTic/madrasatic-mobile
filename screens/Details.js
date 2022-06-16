@@ -271,9 +271,7 @@ const Details = ({ route, navigation }) => {
                         ? themeSelector.isLight
                           ? COLORS.PRIMARY
                           : COLORS.LIGHT
-                        : themeSelector.isLight
-                        ? COLORS.SUBTLE
-                        : COLORS.DARK
+                        : COLORS.SUBTLE
                     }
                   />
                   <Body
@@ -309,9 +307,7 @@ const Details = ({ route, navigation }) => {
                         ? themeSelector.isLight
                           ? COLORS.PRIMARY
                           : COLORS.LIGHT
-                        : themeSelector.isLight
-                        ? COLORS.SUBTLE
-                        : COLORS.DARK
+                        : COLORS.SUBTLE
                     }
                   />
                   <Body
@@ -340,9 +336,7 @@ const Details = ({ route, navigation }) => {
                       ? themeSelector.isLight
                         ? COLORS.PRIMARY
                         : COLORS.LIGHT
-                      : themeSelector.isLight
-                      ? COLORS.SUBTLE
-                      : COLORS.DARK
+                      : COLORS.SUBTLE
                   }
                 />
                 <Body

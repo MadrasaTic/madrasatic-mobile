@@ -11,7 +11,8 @@ import Login from "./screens/login";
 import IntroSlider from "./screens/introSlider";
 import CheckLoad from "./screens/checkLoad";
 import LoggedInNavigator from "./components/loggedInNavigator";
-import Details from "./screens/Details";
+import Details from "./screens/details";
+import AnnouncementDetails from "./screens/announcementDetails";
 import { Provider } from "react-redux";
 import { Store, persistor } from "./redux/store";
 import * as Notifications from "expo-notifications";
@@ -59,16 +60,17 @@ export default function App() {
       <>
         <NavigationContainer>
           <Provider store={Store}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="CheckLoad" component={CheckLoad} />
-              <Stack.Screen name="IntroSlider" component={IntroSlider} />
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen
-                name="LoggedInNavigator"
-                component={LoggedInNavigator}
-              />
-              <Stack.Screen name="Details" component={Details} />
-            </Stack.Navigator>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="CheckLoad" component={CheckLoad} />
+                <Stack.Screen name="IntroSlider" component={IntroSlider} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen
+                  name="LoggedInNavigator"
+                  component={LoggedInNavigator}
+                />
+                <Stack.Screen name="Details" component={Details} />
+                <Stack.Screen name="AnnouncementDetails" component={AnnouncementDetails} />
+              </Stack.Navigator>
           </Provider>
         </NavigationContainer>
       </>

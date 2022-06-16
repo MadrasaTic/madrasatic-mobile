@@ -18,18 +18,51 @@ import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { setItem } from "../redux/actions";
 import { FAB } from "react-native-elements";
-import { PlusIcon } from "react-native-heroicons/solid";
+import { PlusIcon, ThumbDownIcon, ThumbUpIcon } from "react-native-heroicons/solid";
 
 const likeImage = require("../assets/images/like.png");
 const dislikeImage = require("../assets/images/dislike.png");
 const plusImage = require("../assets/images/plus.png");
+const dislikedImage = require('../assets/images/dislikedBlue.png');
+const likedImage = require('../assets/images/likedBlue.png');
 
 export default function Home({ navigation }) {
   const [data, setData] = useState([]);
   const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const dispatch = useDispatch();
+  const [extraData, setExtraData] = useState(false);
   const themeSelector = useSelector((state) => state.themeReducer);
+  const dispatch = useDispatch();
+
+
+  const react = async (id, reaction) => {
+    const token = await SecureStore.getItemAsync("token");
+    axios({
+      url: `http://madrasatic.tech/api/signalement/${id}/react/${reaction}`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const reactToPost = async (id, reaction) => {
+    const index = data.findIndex(x => x.id == id)
+    if (data[index].isReacted != reaction) {
+      await react(id, reaction);
+      data[index].isReacted = reaction;
+      setExtraData(!extraData);
+    } else {
+      await react(id, reaction);
+      data[index].isReacted = null;
+      setExtraData(!extraData);
+    }
+  }
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -166,11 +199,28 @@ export default function Home({ navigation }) {
         </Body>
         <View style={styles.interactiveView}>
           <View style={styles.likeDislikeView}>
-            <Pressable>
-              <Image style={styles.likeDislikeImage} source={likeImage} />
+            <Pressable onPress={() => {reactToPost(item.id, "up")}}>
+            <ThumbUpIcon
+                    color={
+                      item.isReacted == "up"
+                        ? themeSelector.isLight
+                          ? COLORS.PRIMARY
+                          : COLORS.LIGHT
+                        : COLORS.SUBTLE
+                    }
+                    style={{marginRight: 20}}
+                  />
             </Pressable>
-            <Pressable>
-              <Image style={styles.likeDislikeImage} source={dislikeImage} />
+            <Pressable onPress={() => {reactToPost(item.id, "down")}}>
+            <ThumbDownIcon
+                    color={
+                      item.isReacted == "down"
+                        ? themeSelector.isLight
+                          ? COLORS.PRIMARY
+                          : COLORS.LIGHT
+                        : COLORS.SUBTLE
+                    }
+                  />
             </Pressable>
           </View>
           <Pressable
@@ -207,6 +257,7 @@ export default function Home({ navigation }) {
         keyExtractor={(item) => item.id}
         onRefresh={() => fetchData()}
         refreshing={isLoading}
+        extraData={data}
       />
       <FAB
         style={styles.addButton}
@@ -284,6 +335,8 @@ const styles = StyleSheet.create({
   },
   likeDislikeView: {
     flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   likeDislikeImage: {
     height: 24,

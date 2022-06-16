@@ -38,6 +38,7 @@ const Profile = ({ navigation }) => {
 
   const [isEnabledAnnonces, setIsEnabledAnnonces] = useState(false);
   const [isEnabledSignalements, setIsEnabledSignalements] = useState(false);
+
   return (
     <View
       style={[
@@ -50,7 +51,7 @@ const Profile = ({ navigation }) => {
       ]}
     >
       <StatusBar
-        backgroundColor={COLORS.IRIS_10}
+        backgroundColor={themeSelector.isLight ? COLORS.IRIS_10 : COLORS.DARK}
         barStyle={themeSelector.statusbarStyle}
       />
 
