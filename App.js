@@ -11,7 +11,8 @@ import Login from "./screens/login";
 import IntroSlider from "./screens/introSlider";
 import CheckLoad from "./screens/checkLoad";
 import LoggedInNavigator from "./components/loggedInNavigator";
-import Details from "./screens/Details";
+import Details from "./screens/details";
+import AnnouncementDetails from "./screens/announcementDetails";
 import { Provider } from "react-redux";
 import {Store, persistor} from "./redux/store";
 
@@ -43,6 +44,7 @@ export default function App() {
                   component={LoggedInNavigator}
                 />
                 <Stack.Screen name="Details" component={Details} />
+                <Stack.Screen name="AnnouncementDetails" component={AnnouncementDetails} />
               </Stack.Navigator>
           </Provider>
         </NavigationContainer>

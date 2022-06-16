@@ -1,5 +1,5 @@
 import Body from '../components/typography/body';
-import { View, TextInput, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-native';
+import { View, TextInput, StyleSheet, Image, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import COLORS from '../constants/colors';
@@ -17,14 +17,18 @@ const camera = require('../assets/images/camera.png');
 const Submit = ({navigation}) => {
 
 
+
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([]);
+    const [openCat, setOpenCat] = useState(false);
+    const [openSite, setOpenSite] = useState(false);
+    const [catValue, setCatValue] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [locs, setLocs] = useState([]);
+    const [locsValue, setLocsValue] = useState({});
 
 
-    let formData = new FormData();
+    var formData = new FormData();
 
     const [image, setImage] = useState(null);
     const [status, requestPermission] = ImagePicker.useCameraPermissions();
@@ -32,16 +36,39 @@ const Submit = ({navigation}) => {
     const fetchCategories = async () => {
         axios.get("http://madrasatic.tech/api/category")
         .then(res => {
-            var items = [];
+            var cats = [];
             res.data.forEach(element => {
-                items.push({label: element.name, value: element.id});
+                cats.push({label: element.name, value: element.id});
             });
-            setItems(items);
+            setCategories(cats);
         })
         .catch(err => {
             console.log(err);
         })
     };
+
+    const fetchInfra = async () => {
+        axios.get("http://madrasatic.tech/api/infrastructure")
+        .then(res => {
+            var infra = [];
+            res.data.forEach(element => {
+                element.blocs.forEach(bloc => {
+                    bloc.rooms.forEach(room => {
+                        infra.push(
+                            {
+                                label: element.name + ", " + bloc.name + ", " + room.name,
+                                value: "" + element.id + bloc.id + room.id + ""
+                            }
+                        )
+                    });
+                });
+            });
+            setLocs(infra);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }
 
     const pickImage = async () => {
         requestPermission();
@@ -53,13 +80,19 @@ const Submit = ({navigation}) => {
     }
 
 
-    const submit = async () => {
+    const submit = async (publish = true) => {
         formData.append('title', title);
         formData.append('description', desc);
-        formData.append('category_id', value);
-        formData.append('annexe_id', '1');
+        formData.append('category_id', catValue);
+        formData.append('annexe_id', locsValue[0]);
+        formData.append('bloc_id', locsValue[1]);
+        formData.append('room_id', locsValue[2]);
         formData.append('infrastructure_type', '1');
-        formData.append('published', 1);
+        if (publish) {
+            formData.append('published', 1);
+        } else {
+            formData.append('published', 0);
+        }
         formData.append('attachement', {
             name:'image',
             uri: image,
@@ -81,7 +114,7 @@ const Submit = ({navigation}) => {
             setImage(null);
             setTitle('');
             setDesc('');
-            setValue(null);
+            setCatValue(null);
             navigation.navigate('Signalements');
         })
         .catch((err) => {
@@ -91,11 +124,13 @@ const Submit = ({navigation}) => {
 
 
     useEffect(() => {
-        fetchCategories()
+        fetchCategories();
+        fetchInfra();
     }, []);
 
     return (
         <View style={styles.screen}>
+            {/* Header */}
             <View style={styles.header}>
                 <View style={styles.headerContent}>
                     <Pressable style={styles.headerPressable} onPress={() => navigation.navigate("Signalements")}>
@@ -108,7 +143,7 @@ const Submit = ({navigation}) => {
 
 
             <View style={styles.container} scrollEnabled={true}>
-                <View style={styles.titleSection}>
+                <View style={styles.section}>
                     <Body style={styles.titleText}>Titre du signalement</Body>
                     <View style={styles.inputContainer}>
                         <TextInput 
@@ -119,26 +154,39 @@ const Submit = ({navigation}) => {
                     </View>
                 </View>
 
-                <View style={styles.categorySection}>
+                { /* TODO: Fix dropdowns not working */}
+                <View style={styles.dropdownSection}>                
                     <Body style={styles.titleText}>Catégorie</Body>
                     <DropDownPicker 
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
-                        style={styles.inputContainer}
-                        placeholder="Choisissez une catégorie"
-                    />
+                            open={openCat}
+                            value={catValue}
+                            items={categories}
+                            setOpen={setOpenCat}
+                            setcatValue={setCatValue}
+                            setItems={setCategories}
+                            style={styles.inputContainer}
+                            placeholder="Choisissez une catégorie"
+                        />
+
+                    <Body style={styles.titleText}>Lieu</Body>
+                    <DropDownPicker 
+                                open={openSite}
+                                value={locsValue}
+                                items={locs}
+                                setOpen={setOpenSite}
+                                setcatValue={setLocsValue}
+                                setItems={setLocs}
+                                style={styles.inputContainer}
+                                placeholder="Choisissez le lieu du problème"
+                            />
                 </View>
 
-                <View style={styles.descSection}>
+                <View style={styles.section}>
                     <Body style={styles.titleText}>Déscription</Body>
                     <TextInput
                         multiline
                         numberOfLines={6}
-                        value={desc}
+                        catValue={desc}
                         onChangeText={text => setDesc(text)}
                         style={styles.descInput}
                         placeholder="Décrivez votre signalement"
@@ -166,10 +214,11 @@ const Submit = ({navigation}) => {
                     <Pressable style={styles.validationButton} onPress={() => submit()}>
                         <Bold style={styles.validationText}>VALIDER</Bold>
                     </Pressable>
-                    {/*<Pressable style={styles.saveButton}>
+                    <Pressable style={styles.saveButton} onPress={() => submit(false)}>
                         <Bold style={styles.saveText}>ENREGISTRER</Bold>
-                </Pressable>*/}
+                    </Pressable>
                 </View>
+
 
             </View>
         </View>
@@ -187,15 +236,12 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.ACCENT,
         height: 100,
     },
-    titleSection: {
+    section: {
         marginBottom: 10
     },
-    categorySection: {
+    dropdownSection: {
         marginBottom: 10,
-        zIndex: 1000
-    },
-    descSection: {
-        marginBottom: 10
+        zIndex: 10
     },
     imageSection: {
         marginBottom: 30
@@ -233,12 +279,14 @@ const styles = StyleSheet.create({
         borderColor: COLORS.SUBTLE,
         borderWidth: 1.5,
         borderRadius: 8,
+        marginVertical: 4
     },
     descInput: {
         backgroundColor: COLORS.ACCENT,
         borderRadius: 8,
         textAlignVertical: 'top',
-        padding: 10
+        padding: 10,
+        height: 100
     },
     imgInputContainer: {
         borderStyle: 'dashed',
@@ -247,19 +295,18 @@ const styles = StyleSheet.create({
         borderColor: COLORS.SUBTLE,
         backgroundColor: COLORS.LIGHT,
         alignItems: 'center',
-        paddingVertical: 45,
-        height: 200
+        paddingVertical: 20,
+        height: 120
     },
     imgInputTextContainer: {
         backgroundColor: COLORS.IRIS_10,
-        paddingVertical: 10,
+        paddingVertical: 5,
         paddingHorizontal: 5,
         alignItems: 'center',
         borderRadius: 8,
         width: '80%',
     },
     imgInputPng: {
-        marginBottom: 10,
         width: 45,
         height: 45
     },
@@ -298,7 +345,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.SUBTLE,
         backgroundColor: COLORS.LIGHT,
         alignItems: 'center',
-    }
+    },
 });
 
 

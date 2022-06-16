@@ -63,7 +63,6 @@ const Details = ({ route, navigation }) => {
         setUpVoted(res.data.isReacted === "up" ? true : false);
         setDownVoted(res.data.isReacted === "down" ? true : false);
         setSaved(res.data.isSaved);
-        console.log(selector.item);
         setIsLoading(false);
       })
       .catch((error) => {

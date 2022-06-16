@@ -12,7 +12,9 @@ import { useDispatch } from 'react-redux';
 
 
 
+// Do not let the name fool you, bookmarked is for the saved (or unpublished) submits of the user
 
+// TODO: Refactor "bookmarked" into "saved" or "unpublished" after double checking with API team
 
 export default function Bookmarked({ navigation }) {
 

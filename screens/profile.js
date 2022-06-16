@@ -28,6 +28,7 @@ const Profile = ({ navigation }) => {
 
   const [isEnabledAnnonces, setIsEnabledAnnonces] = useState(false);
   const [isEnabledSignalements, setIsEnabledSignalements] = useState(false);
+
   return (
     <View style={styles.screen}>
       <View style={styles.container}>

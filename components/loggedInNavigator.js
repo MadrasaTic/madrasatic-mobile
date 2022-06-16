@@ -95,7 +95,7 @@ const LoggedInNavigator = ({ navigation }) => {
           }}
           listeners={({ navigation, route }) => ({
             // on press
-            tabPress: () => (offset.value = getPos() * 1.3),
+            tabPress: () => (offset.value = getPos()),
           })}
         />
 
@@ -133,10 +133,47 @@ const LoggedInNavigator = ({ navigation }) => {
           }}
           listeners={({ navigation, route }) => ({
             // on press
-            tabPress: () => (offset.value = getPos() * 4),
+            tabPress: () => (offset.value = getPos() * 3),
           })}
         />
 
+
+        {/*Annonces*/}
+        <Tab.Screen
+          name="Announcement"
+          component={Announcement}
+          options={{
+            headerStyle: {
+              backgroundColor: COLORS.ACCENT,
+
+            },
+            headerTitleStyle: {
+              fontFamily: "WorkSans_700Bold",
+              fontSize: 24,
+              letterSpacing: -1,
+              alignSelf: 'center'
+            },
+            headerTitleAlign: 'center',
+            headerTintColor: COLORS.PRIMARY,
+            title: "Annonces",
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={{
+                  position: "absolute",
+                }}
+              >
+                <SpeakerphoneIcon
+                  color={focused ? COLORS.PRIMARY : COLORS.SUBTLE}
+                  size={24}
+                />
+              </View>
+            ),
+          }}
+          listeners={({ navigation, route }) => ({
+            // on press
+            tabPress: () => (offset.value = getPos() * 5),
+          })}
+        />
 
 
         {/*Profile*/}
@@ -172,7 +209,7 @@ const LoggedInNavigator = ({ navigation }) => {
           }}
           listeners={({ navigation, route }) => ({
             // on press
-            tabPress: () => (offset.value = getPos() * 6.65),
+            tabPress: () => (offset.value = getPos() * 6.95),
           })}
         />
       </Tab.Navigator>

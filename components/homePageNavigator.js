@@ -6,12 +6,12 @@ import Valid from '../screens/valid';
 import Liked from '../screens/liked';
 import Disliked from '../screens/disliked';
 import Submit from '../screens/submit';
-import Details from '../screens/Details';
 import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import COLORS from '../constants/colors';
 import Subtitle from './typography/subtitle';
 import Small from './typography/small';
+import Details from '../screens/details';
 import { Button, Image, Pressable } from 'react-native';
 
 const likedImage = '../assets/images/liked.png';
