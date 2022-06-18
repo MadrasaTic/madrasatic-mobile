@@ -45,7 +45,6 @@ const Details = ({ route, navigation }) => {
 
   useEffect(() => {
     fetchItem(id);
-    console.log(id);
     return () => {};
   }, []);
 
@@ -77,7 +76,6 @@ const Details = ({ route, navigation }) => {
           setUpVoted(signalRes.data.isReacted === "up" ? true : false);
           setDownVoted(signalRes.data.isReacted === "down" ? true : false);
           setSaved(signalRes.data.isSaved);
-          console.log(selector.item);
           setIsLoading(false);
         })
       )

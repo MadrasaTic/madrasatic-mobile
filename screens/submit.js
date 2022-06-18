@@ -28,8 +28,8 @@ const Submit = ({navigation, route}) => {
     } 
 
     const [id, setId] = useState(savedId)
-    const [title, setTitle] = useState(savedTitle);
-    const [desc, setDesc] = useState(description);
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
     const [openCat, setOpenCat] = useState(false);
     const [openSite, setOpenSite] = useState(false);
     const [catValue, setCatValue] = useState(null);
@@ -128,6 +128,7 @@ const Submit = ({navigation, route}) => {
     };
 
     const submit = async (publish = true) => {
+        console.log("submitting", publish)
         formData.append('title', title);
         formData.append('description', desc);
         formData.append('category_id', catValue);
@@ -158,7 +159,6 @@ const Submit = ({navigation, route}) => {
             }
         })
         .then((res) => {
-            console.log(res);
             setImage(null);
             setTitle('');
             setDesc('');
@@ -261,20 +261,12 @@ const Submit = ({navigation, route}) => {
 
                 <View style={styles.buttons}>
                     <Pressable style={styles.validationButton} onPress={() => {
-                        if (route.params) {
-                            update(true);
-                        } else {
                             submit()
-                        }
                     }}>
                         <Bold style={styles.validationText}>VALIDER</Bold>
                     </Pressable>
                     <Pressable style={styles.saveButton} onPress={() => {
-                        if (route.params) {
-                            update(false)
-                        } else {
                             submit(false);
-                        }
                     }}>
                         <Bold style={styles.saveText}>ENREGISTRER</Bold>
                     </Pressable>

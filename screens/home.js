@@ -20,11 +20,6 @@ import { setItem } from "../redux/actions";
 import { FAB } from "react-native-elements";
 import { PlusIcon, ThumbDownIcon, ThumbUpIcon } from "react-native-heroicons/solid";
 
-const likeImage = require("../assets/images/like.png");
-const dislikeImage = require("../assets/images/dislike.png");
-const plusImage = require("../assets/images/plus.png");
-const dislikedImage = require('../assets/images/dislikedBlue.png');
-const likedImage = require('../assets/images/likedBlue.png');
 
 export default function Home({ navigation }) {
   const [data, setData] = useState([]);
@@ -103,6 +98,7 @@ export default function Home({ navigation }) {
       .catch((error) => {
         if (error.response) {
           // Request made and server responded
+          console.log("HOME SCREEN ERROR: ")
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
@@ -141,7 +137,7 @@ export default function Home({ navigation }) {
       <View style={styles.stateBackground}>
         <View style={styles.stateInner}>
           <View
-            style={[styles.successCircle, { backgroundColor: state.color }]}
+            style={[styles.successCircle]}
           />
           <Small style={styles.stateText}>Traîté</Small>
         </View>
@@ -154,7 +150,7 @@ export default function Home({ navigation }) {
       <View style={styles.stateBackground}>
         <View style={styles.stateInner}>
           <View
-            style={[styles.pendingCircle, { backgroundColor: state.color }]}
+            style={[styles.pendingCircle]}
           />
           <Small style={styles.stateText}>En cours de traitement</Small>
         </View>
@@ -317,6 +313,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
+    backgroundColor: '#FFA500'
   },
   stateText: {
     color: COLORS.SUBTLE,
