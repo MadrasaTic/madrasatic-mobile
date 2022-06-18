@@ -6,12 +6,14 @@ import Valid from '../screens/valid';
 import Liked from '../screens/liked';
 import Disliked from '../screens/disliked';
 import Submit from '../screens/submit';
+import Unpublished from '../screens/unpublished';
 import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import COLORS from '../constants/colors';
 import Subtitle from './typography/subtitle';
 import Small from './typography/small';
 import Details from '../screens/details';
+import UnpublishedDetails from '../screens/unpublishedDetails';
 import { Button, Image, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -52,6 +54,9 @@ const customDrawerContent = ({navigation, state}) => {
                     <Image style={styles.image} source={require(dislikedImage)} />
                 </Pressable>
                 <View style={styles.horizontalRule}></View>
+                <Pressable style={styles.navigationButton} onPress={() => navigation.navigate("Non publiés")}>
+                    <Small style={{color: themeSelector.theme.SUBTLE}}>Non publiés</Small>
+                </Pressable>
                 <View style={styles.padding}></View>
             </View>
         </View>
@@ -176,6 +181,21 @@ const HomePageNavigator = ({navigation}) => {
                             letterSpacing: -1
                         }
                     }}/>
+                <Drawer.Screen 
+                    name="Non publiés" 
+                    component={Unpublished}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: themeSelector.isLight ? COLORS.ACCENT : COLORS.DARK,
+                        },
+                        headerTitleAlign: 'center',
+                        headerTintColor: themeSelector.isLight ? COLORS.PRIMARY : COLORS.LIGHT,
+                        headerTitleStyle: {
+                            fontFamily: 'WorkSans_700Bold',
+                            fontSize: 24,
+                            letterSpacing: -1
+                        }
+                    }}/>
                 <Drawer.Screen
                     name="Ajouter"
                     component={Submit}
@@ -186,6 +206,13 @@ const HomePageNavigator = ({navigation}) => {
                 <Drawer.Screen
                     name="Details"
                     component={Details}
+                    options={{
+                        headerShown: false
+                    }}
+                    />
+                <Drawer.Screen
+                    name="UnpublishedDetails"
+                    component={UnpublishedDetails}
                     options={{
                         headerShown: false
                     }}
