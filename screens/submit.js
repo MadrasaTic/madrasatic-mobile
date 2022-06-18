@@ -14,12 +14,22 @@ import * as SecureStore from 'expo-secure-store';
 const leftArrow = require('../assets/images/arrowLeft.png');
 const camera = require('../assets/images/camera.png');
 
-const Submit = ({navigation}) => {
+const Submit = ({navigation, route}) => {
+
+    DropDownPicker.setListMode("MODAL");
 
 
+    var savedId, description, savedTitle = '';
 
-    const [title, setTitle] = useState('');
-    const [desc, setDesc] = useState('');
+    if (route.params) {
+        savedId = route.params.id;
+        description = route.params.description;
+        savedTitle = route.params.title
+    } 
+
+    const [id, setId] = useState(savedId)
+    const [title, setTitle] = useState(savedTitle);
+    const [desc, setDesc] = useState(description);
     const [openCat, setOpenCat] = useState(false);
     const [openSite, setOpenSite] = useState(false);
     const [catValue, setCatValue] = useState(null);
@@ -80,6 +90,43 @@ const Submit = ({navigation}) => {
     }
 
 
+    const update = async (publish) => {
+        formData.append('category_id', catValue);
+        if (publish) {
+            formData.append('published', 1);
+        } else {
+            formData.append('published', 0);
+        }
+        formData.append('attachement', {
+            name:'image',
+            uri: image,
+            type: 'image/jpeg'
+        });
+
+        const token = await SecureStore.getItemAsync('token');
+        
+        axios({
+            url: `http://madrasatic.tech/api/signalement/${id}`,
+            method: 'POST',
+            data: formData,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((res) => {
+            console.log(res);
+            setImage(null);
+            setTitle('');
+            setDesc('');
+            setCatValue(null);
+            navigation.navigate('Signalements');
+        })
+        .catch((err) => {
+            console.log(err.response.data);
+        })
+    };
+
     const submit = async (publish = true) => {
         formData.append('title', title);
         formData.append('description', desc);
@@ -100,6 +147,7 @@ const Submit = ({navigation}) => {
         });
 
         const token = await SecureStore.getItemAsync('token');
+        
         axios({
             url: 'http://madrasatic.tech/api/signalement',
             method: 'POST',
@@ -118,9 +166,10 @@ const Submit = ({navigation}) => {
             navigation.navigate('Signalements');
         })
         .catch((err) => {
-            console.log(err);
+            console.log(err.response.data);
         })
     };
+
 
 
     useEffect(() => {
@@ -162,7 +211,7 @@ const Submit = ({navigation}) => {
                             value={catValue}
                             items={categories}
                             setOpen={setOpenCat}
-                            setcatValue={setCatValue}
+                            setValue={setCatValue}
                             setItems={setCategories}
                             style={styles.inputContainer}
                             placeholder="Choisissez une catégorie"
@@ -174,7 +223,7 @@ const Submit = ({navigation}) => {
                                 value={locsValue}
                                 items={locs}
                                 setOpen={setOpenSite}
-                                setcatValue={setLocsValue}
+                                setValue={setLocsValue}
                                 setItems={setLocs}
                                 style={styles.inputContainer}
                                 placeholder="Choisissez le lieu du problème"
@@ -211,10 +260,22 @@ const Submit = ({navigation}) => {
                     }
 
                 <View style={styles.buttons}>
-                    <Pressable style={styles.validationButton} onPress={() => submit()}>
+                    <Pressable style={styles.validationButton} onPress={() => {
+                        if (route.params) {
+                            update(true);
+                        } else {
+                            submit()
+                        }
+                    }}>
                         <Bold style={styles.validationText}>VALIDER</Bold>
                     </Pressable>
-                    <Pressable style={styles.saveButton} onPress={() => submit(false)}>
+                    <Pressable style={styles.saveButton} onPress={() => {
+                        if (route.params) {
+                            update(false)
+                        } else {
+                            submit(false);
+                        }
+                    }}>
                         <Bold style={styles.saveText}>ENREGISTRER</Bold>
                     </Pressable>
                 </View>
