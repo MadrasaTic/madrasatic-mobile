@@ -35,7 +35,7 @@ const Details = ({ route, navigation }) => {
   const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
-  const { id, cat } = route.params;
+  const { id } = route.params;
   const [upCount, setUpCount] = useState(0);
   const [downCount, setDownCount] = useState(0);
   const [upVoted, setUpVoted] = useState(false);
@@ -225,12 +225,12 @@ const Details = ({ route, navigation }) => {
                     ]}
                   ></View>
                   <Small style={{ color: themeSelector.theme.SUBTLE }}>
-                    {selector.item.last_signalement_v_c.state_id}
+                    {selector.item.s.name}
                   </Small>
                 </View>
 
                 <Small style={{ color: themeSelector.theme.SUBTLE }}>
-                  {cat.name}
+                  {selector.item.last_signalement_v_c.category.name}
                 </Small>
               </View>
             </View>
@@ -388,6 +388,13 @@ const Details = ({ route, navigation }) => {
                     <Body style={{ color: themeSelector.theme.TEXT }}>A: </Body>
                     <Small style={{ color: themeSelector.theme.SUBTLE }}>
                       {selector.item.updated_at.split(".")[0].split("T")[1]}
+                    </Small>
+                  </View>
+
+                  <View style={styles.info}>
+                    <Body style={{ color: themeSelector.theme.TEXT }}>Service: </Body>
+                    <Small style={{ color: themeSelector.theme.SUBTLE }}>
+                      {selector.item.last_signalement_v_c.service.name}
                     </Small>
                   </View>
                 </View>

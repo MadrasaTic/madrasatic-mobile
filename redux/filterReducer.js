@@ -24,6 +24,8 @@ const filterReducer = (state = initialState, action) => {
                 all: true,
                 signal: false,
                 announce: false,
+                traite: false,
+                enCoursDeTraitement: false
             };
 
         case ENABLE_SIGNAL:
@@ -43,6 +45,8 @@ const filterReducer = (state = initialState, action) => {
                 all: false,
                 signal: false,
                 announce: true,
+                traite: false,
+                enCoursDeTraitement: false,
             };
         case DISABLE_ANNOUNCE:
             return { ...state,
@@ -54,7 +58,9 @@ const filterReducer = (state = initialState, action) => {
             return { ...state,
                 traite: true,
                 enCoursDeTraitement: false,
-                
+                all: false,
+                signal: true,
+                announce: false,
             };
         case DISABLE_TRAITE:
             return { ...state, traite: false };
@@ -63,6 +69,9 @@ const filterReducer = (state = initialState, action) => {
             return { ...state,
                 traite: false,
                 enCoursDeTraitement: true,
+                all: false,
+                signal: true,
+                announce: false,
                 };
         case DISABLE_EN_COURS:
             return { ...state, enCoursDeTraitement: false };

@@ -41,8 +41,9 @@ const wait = (timeout) => {
 
 export default function Search({ navigation }) {
   const [data, setData] = useState([]);
-  const [category, setCategory] = useState([]);
-
+  const [all, setAll] = useState([]);
+  const [annonces, setAnnonces] = useState([]);
+  const [signalements, setSignalements] = useState([]);
   const [filteredByType, setFilteredByType] = useState([]);
   const [selectedType, setSelectedType] = useState(1);
 
@@ -52,7 +53,7 @@ export default function Search({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const sortSelector = useSelector((state) => state.sortReducer);
-  const selector = useSelector((state) => state.detailsCardReducer);
+  const selector = useSelector((state) => state.filterReducer);
   const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
@@ -83,7 +84,7 @@ export default function Search({ navigation }) {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
+    const annonceReq = await axios.get("http://madrasatic.tech/api/annonce", {
       headers: { Authorization: `Bearer ${token}` },
     });
     const stateReq = await axios.get("http://madrasatic.tech/api/states", {
@@ -91,34 +92,28 @@ export default function Search({ navigation }) {
     });
 
     axios
-      .all([signalReq, categoryReq, stateReq])
+      .all([signalReq, stateReq, annonceReq])
       .then(
         axios.spread((...res) => {
           const signalRes = res[0];
-          const categoryRes = res[1];
-          const stateRes = res[2];
+          const stateRes = res[1];
+          const annonceRes = res[2];
 
           // map each signal to its category
-          mapCat(signalRes.data, categoryRes.data, stateRes.data);
+          mapState(signalRes.data, stateRes.data);
 
           // mapReact(signalRes.data, upVoteRes.data);
-
-          // set signals data
-
-          setData(
-            signalRes.data.sort((a, b) => {
+          setAll(
+            annonceRes.data.concat(signalRes.data).sort((a, b) => {
               return b.created_at.localeCompare(a.created_at);
             })
           );
-          setFilteredByType(
-            signalRes.data.sort((a, b) => {
-              return b.created_at.localeCompare(a.created_at);
-            })
-          );
+          setAnnonces(annonceRes.data);
+          setSignalements(signalRes.data);
+          setData(all);
+          setFilteredByType(all);
 
-          // set category data
-
-          setCategory(categoryRes.data);
+          console.log(filteredByType);
           setIsLoading(false);
         })
       )
@@ -138,14 +133,9 @@ export default function Search({ navigation }) {
       });
   };
 
-  // map category with signals
-  const mapCat = async (signalArr, categoryArr, stateArr) => {
+  // map signal with state
+  const mapState = async (signalArr, stateArr) => {
     signalArr.forEach((e) => {
-      categoryArr.map((cat) => {
-        if (e.last_signalement_v_c.category_id === cat.id) {
-          Object.assign(e, { cat });
-        }
-      });
       stateArr.map((s) => {
         if (e.last_signalement_v_c.state_id === s.id) {
           Object.assign(e, { s });
@@ -160,7 +150,6 @@ export default function Search({ navigation }) {
         onPress={() => {
           navigation.getParent().navigate("Details", {
             id: item.id,
-            cat: item.cat,
           });
           dispatch(setItem(item));
         }}
@@ -191,6 +180,10 @@ export default function Search({ navigation }) {
         setFilteredByType={setFilteredByType}
         selectedType={selectedType}
         setSelectedType={setSelectedType}
+        annonces={annonces}
+        signalements={signalements}
+        all={all}
+        setData={setData}
       />
 
       {/* Sort modal */}
@@ -272,7 +265,7 @@ export default function Search({ navigation }) {
         </TouchableOpacity>
       </Modal>
 
-      <CardView />
+      {/* <CardView /> */}
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>

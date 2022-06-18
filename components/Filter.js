@@ -36,7 +36,7 @@ import {
 } from "../redux/actions";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
+const Filter = ({ setSelectedType, selectedType, setFilteredByType, data, annonces, signalements, all, setData }) => {
   var [search, setSearch] = useState("");
 
   const selector = useSelector((state) => state.filterReducer);
@@ -48,10 +48,16 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
   useEffect(() => {
     if (selector.all) {
       setSelectedType(1);
+      setData(all);
+      console.log(data)
     } else if (selector.signal) {
       setSelectedType(2);
+      setData(signalements);
+      console.log(data)
     } else if (selector.announce) {
       setSelectedType(3);
+      setData(annonces);
+      console.log(data)
     }
 
     if (selectedType === 1 && search === "" && sortSelector.checked === "") {
@@ -61,14 +67,18 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
     const filtered = data
       .filter(
         (signal) =>
-          // TODO: filter by type (signalement / annonce)
           (signal.title.toUpperCase().includes(search.toUpperCase()) ||
             signal.description.toUpperCase().includes(search.toUpperCase()) ||
-            signal.cat.name.toUpperCase().includes(search.toUpperCase()) ||
-            signal.cat.priority.name.toUpperCase() === search.toUpperCase()) &&
-          (!selector.traite
-            ? signal.last_signalement_v_c.state_id === 1
-            : signal.last_signalement_v_c.state_id != 1)
+            (signal.last_signalement_v_c ? signal.last_signalement_v_c.category.name
+              .toUpperCase()
+              .includes(search.toUpperCase()) ||
+            signal.last_signalement_v_c.category.priority.name.toUpperCase() ===
+              search.toUpperCase() : false)) &&
+          (signal.last_signalement_v_c ?(selector.traite
+            ? signal.s.name.toUpperCase() === "traité".toUpperCase()
+            : selector.enCoursDeTraitement
+            ? signal.s.name.toUpperCase().includes("en cours".toUpperCase())
+            : true): true)
       )
       .sort((a, b) => {
         switch (sortSelector.checked) {
@@ -86,6 +96,7 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data }) => {
       });
     setFilteredByType(filtered);
   }, [selectedType, search, selector, sortSelector]);
+  
 
   return (
     <View
