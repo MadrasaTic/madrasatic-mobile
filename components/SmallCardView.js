@@ -60,10 +60,10 @@ const SmallCardView = ({ item }) => {
         </Body>
         <View style={styles.status}>
           <View
-            style={[styles.statusIndicator, { backgroundColor: item.s.color }]}
+            style={[styles.statusIndicator, { backgroundColor: item.last_signalement_v_c.state.color }]}
           ></View>
           <Small style={{ color: themeSelector.theme.SUBTLE }}>
-            {item.s.name}
+            {item.last_signalement_v_c.state.name}
           </Small>
         </View>
       </View>

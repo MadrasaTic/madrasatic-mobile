@@ -75,9 +75,9 @@ const Filter = ({ setSelectedType, selectedType, setFilteredByType, data, annonc
             signal.last_signalement_v_c.category.priority.name.toUpperCase() ===
               search.toUpperCase() : false)) &&
           (signal.last_signalement_v_c ?(selector.traite
-            ? signal.s.name.toUpperCase() === "traité".toUpperCase()
+            ? signal.last_signalement_v_c.state.name.toUpperCase() === "traité".toUpperCase()
             : selector.enCoursDeTraitement
-            ? signal.s.name.toUpperCase().includes("en cours".toUpperCase())
+            ? signal.last_signalement_v_c.state.name.toUpperCase().includes("en cours".toUpperCase())
             : true): true)
       )
       .sort((a, b) => {

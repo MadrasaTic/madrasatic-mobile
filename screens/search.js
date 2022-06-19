@@ -87,20 +87,15 @@ export default function Search({ navigation }) {
     const annonceReq = await axios.get("http://madrasatic.tech/api/annonce", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    const stateReq = await axios.get("http://madrasatic.tech/api/states", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+
 
     axios
-      .all([signalReq, stateReq, annonceReq])
+      .all([signalReq, annonceReq])
       .then(
         axios.spread((...res) => {
           const signalRes = res[0];
-          const stateRes = res[1];
-          const annonceRes = res[2];
+          const annonceRes = res[1];
 
-          // map each signal to its category
-          mapState(signalRes.data, stateRes.data);
 
           // mapReact(signalRes.data, upVoteRes.data);
           setAll(
@@ -108,10 +103,15 @@ export default function Search({ navigation }) {
               return b.created_at.localeCompare(a.created_at);
             })
           );
+          setData(annonceRes.data.concat(signalRes.data).sort((a, b) => {
+            return b.created_at.localeCompare(a.created_at);
+          }));
+          setFilteredByType(annonceRes.data.concat(signalRes.data).sort((a, b) => {
+            return b.created_at.localeCompare(a.created_at);
+          }));
           setAnnonces(annonceRes.data);
           setSignalements(signalRes.data);
-          setData(all);
-          setFilteredByType(all);
+          
 
           console.log(filteredByType);
           setIsLoading(false);
@@ -133,28 +133,18 @@ export default function Search({ navigation }) {
       });
   };
 
-  // map signal with state
-  const mapState = async (signalArr, stateArr) => {
-    signalArr.forEach((e) => {
-      stateArr.map((s) => {
-        if (e.last_signalement_v_c.state_id === s.id) {
-          Object.assign(e, { s });
-        }
-      });
-    });
-  };
 
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
+          item.last_signalement_v_c ? 
           navigation.getParent().navigate("Details", {
+            id: item.id,
+          }) : navigation.getParent().navigate("AnnouncementDetails", {
             id: item.id,
           });
           dispatch(setItem(item));
-        }}
-        onLongPress={() => {
-          dispatch(setDetailCardVisible({ item }));
         }}
         onPressOut={() => dispatch(setDetailCardInvisible())}
         delayLongPress={250}

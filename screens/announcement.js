@@ -1,62 +1,47 @@
-import { View, StyleSheet, Image, SafeAreaView, FlatList } from 'react-native';
-import { useState, useEffect } from 'react';
-import { Card } from '@rneui/themed';
-import Body from '../components/typography/body';
-import Bold from '../components/typography/bold';
-import Small from '../components/typography/small';
-import COLORS from '../constants/colors';
-import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
-import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
-import { useDispatch } from 'react-redux';
-import { setItem } from '../redux/actions';
-
-
-
-
+import { View, StyleSheet, Image, SafeAreaView, FlatList } from "react-native";
+import { useState, useEffect } from "react";
+import { Card } from "@rneui/themed";
+import Body from "../components/typography/body";
+import Bold from "../components/typography/bold";
+import Small from "../components/typography/small";
+import COLORS from "../constants/colors";
+import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import { useDispatch, useSelector } from "react-redux";
+import { setItem } from "../redux/actions";
 
 export default function Announcement({ navigation }) {
-
   const [data, setData] = useState([]);
-  const [category, setCategory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const themeSelector = useSelector((state) => state.themeReducer);
   const dispatch = useDispatch();
 
   const fetchData = async () => {
     setIsLoading(true);
     const token = await SecureStore.getItemAsync("token");
 
-
-    const signalReq = await axios.get("http://madrasatic.tech/api/user/saved", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const categoryReq = await axios.get("http://madrasatic.tech/api/category", {
+    const annonceReq = await axios.get("http://madrasatic.tech/api/annonce", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     axios
-      .all([signalReq, categoryReq])
-      .then(axios.spread((...res) => {
-        const signalRes = res[0];
-        const categoryRes = res[1];
+      .all([annonceReq])
+      .then(
+        axios.spread((...res) => {
+          const annonceRes = res[0];
 
-        // map each signal to its category
-        mapCat(signalRes.data, categoryRes.data);
+          // set Annonce data
 
-        // set signals data
-
-        setData(signalRes.data.sort((a, b) => {
-          return b.updated_at.localeCompare(
-            a.updated_at
+          setData(
+            annonceRes.data.sort((a, b) => {
+              return b.updated_at.localeCompare(a.updated_at);
+            })
           );
-        }));
 
-
-        // set category data
-        
-        setCategory(categoryRes.data);
-        setIsLoading(false);
-      }))
+          setIsLoading(false);
+        })
+      )
       .catch((error) => {
         if (error.response) {
           // Request made and server responded
@@ -73,36 +58,29 @@ export default function Announcement({ navigation }) {
       });
   };
 
-   // map category with signals
-   const mapCat = async (signalArr, categoryArr) => {
-    signalArr.forEach(e => {
-      categoryArr.map((cat) => {
-      if (e.last_signalement_v_c.category_id === cat.id) {
-        Object.assign(e, {cat})
-      }
-    });
-    
-    })
-  }
-
   useEffect(() => {
     fetchData();
   }, []);
 
-
-    const Annonce = ({ item }) => {
+  const Annonce = ({ item }) => {
     return (
-      <Card containerStyle={styles.Card} wrapperStyle={styles.inCard}>
+      <Card
+        containerStyle={[
+          styles.Card,
+          {
+            backgroundColor: themeSelector.isLight ? COLORS.LIGHT : COLORS.DARK,
+          },
+        ]}
+        wrapperStyle={styles.inCard}
+      >
         <Image
           style={styles.Image}
           source={{
-            uri:
-              "http://madrasatic.tech/storage/" +
-              item.last_signalement_v_c.attachement,
+            uri: "http://madrasatic.tech/storage/" + item.image,
           }}
         />
-        <Bold>Annonce test</Bold>
-        <Body style={styles.Description}>
+        <Bold style={{ color: themeSelector.theme.TEXT }}>{item.title}</Bold>
+        <Body style={{ color: themeSelector.theme.SUBTLE }}>
           {item.description.length < 100
             ? item.description
             : item.description.slice(0, 100) + "..."}
@@ -113,7 +91,6 @@ export default function Announcement({ navigation }) {
             onPress={() => {
               navigation.getParent().navigate("AnnouncementDetails", {
                 id: item.id,
-                cat: item.cat,
               });
               dispatch(setItem(item));
             }}
@@ -126,25 +103,32 @@ export default function Announcement({ navigation }) {
   };
 
   return (
-
-    <SafeAreaView style={styles.Container}>
-      <FlatList 
-        data={data} 
-        renderItem={({item}) => <Annonce item={item} />} 
-        keyExtractor={item => item.id} 
+    <SafeAreaView
+      style={[
+        styles.Container,
+        {
+          backgroundColor: themeSelector.isLight
+            ? COLORS.LIGHT
+            : COLORS.PRIMARY,
+        },
+      ]}
+    >
+      <FlatList
+        data={data}
+        renderItem={({ item }) => <Annonce item={item} />}
+        keyExtractor={(item) => item.id}
         onRefresh={() => fetchData()}
         refreshing={isLoading}
-        />
+      />
     </SafeAreaView>
-
   );
-};
+}
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: 'white',
-    paddingBottom: 70
+    backgroundColor: "white",
+    paddingBottom: 70,
   },
   Card: {
     paddingHorizontal: 20,
@@ -152,36 +136,36 @@ const styles = StyleSheet.create({
     borderColor: COLORS.IRIS_10,
   },
   inCard: {
-    width: '100%',
+    width: "100%",
     flex: 2,
     height: 370,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   signalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   Image: {
-    width: '100%',
-    height: '55%',
-    borderRadius: 8
+    width: "100%",
+    height: "55%",
+    borderRadius: 8,
   },
   Description: {
-    color: COLORS.TEXT
+    color: COLORS.TEXT,
   },
   interactiveView: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   detailButton: {
     backgroundColor: COLORS.PRIMARY,
-    borderRadius: 8
-  }
+    borderRadius: 8,
+  },
 });

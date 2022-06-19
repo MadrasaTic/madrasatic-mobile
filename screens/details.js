@@ -214,16 +214,15 @@ const Details = ({ route, navigation }) => {
                   {capitalize(selector.item.title)}
                 </Bold>
 
-                {/* FIXME: if Annonce ne pas afficher etat */}
                 <View style={styles.status}>
                   <View
                     style={[
                       styles.statusIndicator,
-                      { backgroundColor: selector.item.s.color },
+                      { backgroundColor: selector.item.last_signalement_v_c.state.color },
                     ]}
                   ></View>
                   <Small style={{ color: themeSelector.theme.SUBTLE }}>
-                    {selector.item.s.name}
+                    {selector.item.last_signalement_v_c.state.name}
                   </Small>
                 </View>
 
